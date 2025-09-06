@@ -5,16 +5,18 @@ import Link from "next/link";
 import { BookOpen } from "lucide-react";
 import { urlFor } from "@/sanity/lib/image";
 import { Loader } from "@/components/ui/loader";
-// import { CourseProgress } from "@/components/CourseProgress";
-import { GetCoursesQueryResult } from "@/sanity.types";
+import { CourseProgress } from "@/components/CourseProgress";
+import {
+  GetCoursesQueryResult,
+  GetEnrolledCoursesQueryResult
+} from "@/sanity.types";
 
 interface CourseCardProps {
-  // course:
-  //   | GetCoursesQueryResult[number]
-  //   | NonNullable<
-  //       NonNullable<GetEnrolledCoursesQueryResult>["enrolledCourses"][number]["course"]
-  //     >;
-  course: GetCoursesQueryResult[number];
+  course:
+    | GetCoursesQueryResult[number]
+    | NonNullable<
+        NonNullable<GetEnrolledCoursesQueryResult>["enrolledCourses"][number]["course"]
+      >;
   progress?: number;
   href: string;
 }
@@ -88,14 +90,14 @@ export function CourseCard({ course, progress, href }: CourseCardProps) {
                 <BookOpen className="h-4 w-4 text-muted-foreground" />
               </div>
             )}
-            {/* {typeof progress === "number" && (
+            {typeof progress === "number" && (
               <CourseProgress
                 progress={progress}
                 variant="default"
                 size="sm"
                 label="Course Progress"
               />
-            )} */}
+            )}
           </div>
         </div>
       </div>
