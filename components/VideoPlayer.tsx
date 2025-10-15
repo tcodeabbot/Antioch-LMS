@@ -7,7 +7,7 @@ const ReactPlayer = dynamic(() => import("react-player"), {
   loading: () => (
     <div className="relative aspect-video bg-gray-200 animate-pulse" />
   )
-}) as any;
+});
 
 interface VideoPlayerProps {
   url: string;
