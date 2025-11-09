@@ -22,13 +22,13 @@ export default async function MyCoursesPage() {
       const progress = await getCourseProgress(user.id, course._id);
       return {
         course,
-        progress: progress.courseProgress,
+        progress: progress.courseProgress
       };
     })
   );
 
   return (
-    <div className="h-full pt-16">
+    <div className="h-full">
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center gap-4 mb-8">
           <GraduationCap className="h-8 w-8 text-primary" />

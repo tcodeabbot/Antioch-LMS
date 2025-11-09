@@ -14,7 +14,7 @@ export default async function SearchPage({ params }: SearchPageProps) {
   const courses = await searchCourses(decodedTerm);
 
   return (
-    <div className="h-full pt-16">
+    <div className="h-full">
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center gap-4 mb-8">
           <Search className="h-8 w-8 text-primary" />
