@@ -49,28 +49,30 @@ export default function Header() {
 
           {/* Right section: Navigation and Auth */}
           <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 lg:gap-4 flex-shrink-0">
-            {/* My Courses Link */}
-            <nav className="hidden sm:block">
+            {/* Dashboard Link */}
+            <SignedIn>
+              <nav className="hidden sm:block">
+                <Link
+                  prefetch={false}
+                  href="/dashboard"
+                  className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium text-muted-foreground hover:text-foreground transition-colors md:border md:border-border md:rounded-md md:px-3 md:py-1.5 lg:px-4 lg:py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  aria-label="My Courses"
+                >
+                  <BookMarkedIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
+                  <span className="hidden lg:block">Dashboard</span>
+                </Link>
+              </nav>
+
+              {/* Mobile My Courses Icon */}
               <Link
                 prefetch={false}
                 href="/my-courses"
-                className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium text-muted-foreground hover:text-foreground transition-colors md:border md:border-border md:rounded-md md:px-3 md:py-1.5 lg:px-4 lg:py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="sm:hidden flex items-center justify-center h-9 w-9 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 aria-label="My Courses"
               >
-                <BookMarkedIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
-                <span className="hidden lg:block">My Courses</span>
+                <BookMarkedIcon className="h-4 w-4" />
               </Link>
-            </nav>
-
-            {/* Mobile My Courses Icon */}
-            <Link
-              prefetch={false}
-              href="/my-courses"
-              className="sm:hidden flex items-center justify-center h-9 w-9 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              aria-label="My Courses"
-            >
-              <BookMarkedIcon className="h-4 w-4" />
-            </Link>
+            </SignedIn>
 
             {/* Dark Mode Toggle */}
             <div className="flex-shrink-0">
