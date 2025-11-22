@@ -1,0 +1,214 @@
+import { redirect } from "next/navigation";
+import { checkAdminAccess } from "@/lib/adminAuth";
+import { getCourseStats } from "@/sanity/lib/admin/getCourseStats";
+import { CourseCard } from "@/components/CourseCard";
+import { 
+  GraduationCap, 
+  BookOpen, 
+  Users, 
+  DollarSign,
+  TrendingUp,
+  Award
+} from "lucide-react";
+import Link from "next/link";
+
+export default async function AdminDashboardPage() {
+  const auth = await checkAdminAccess();
+
+  if (!auth.isAuthorized) {
+    redirect(auth.redirect || "/dashboard");
+  }
+
+  const stats = await getCourseStats();
+  const revenueInDollars = (stats.totalRevenue || 0) / 100;
+
+  return (
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">
+          Admin Dashboard
+        </h1>
+        <p className="text-muted-foreground">
+          Overview of your learning management system
+        </p>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="bg-card border border-border rounded-lg p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground mb-1">
+                Total Courses
+              </p>
+              <p className="text-3xl font-bold text-foreground">
+                {stats.totalCourses || 0}
+              </p>
+            </div>
+            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <BookOpen className="h-6 w-6 text-primary" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-card border border-border rounded-lg p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground mb-1">
+                Total Students
+              </p>
+              <p className="text-3xl font-bold text-foreground">
+                {stats.totalStudents || 0}
+              </p>
+            </div>
+            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <Users className="h-6 w-6 text-primary" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-card border border-border rounded-lg p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground mb-1">
+                Total Enrollments
+              </p>
+              <p className="text-3xl font-bold text-foreground">
+                {stats.totalEnrollments || 0}
+              </p>
+            </div>
+            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <GraduationCap className="h-6 w-6 text-primary" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-card border border-border rounded-lg p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground mb-1">
+                Total Revenue
+              </p>
+              <p className="text-3xl font-bold text-foreground">
+                ${revenueInDollars.toLocaleString("en-US", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </p>
+            </div>
+            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <DollarSign className="h-6 w-6 text-primary" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Courses Section */}
+      <div>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-foreground">
+            All Courses
+          </h2>
+          <Link
+            href="/admin/courses"
+            className="text-sm font-medium text-primary hover:underline"
+          >
+            View All
+          </Link>
+        </div>
+
+        {stats.courses && stats.courses.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {stats.courses.map((course: any) => {
+              const courseRevenue = (course.totalRevenue || 0) / 100;
+              const totalLessons = course.modules?.reduce(
+                (sum: number, module: any) => sum + (module.lessonCount || 0),
+                0
+              ) || 0;
+
+              return (
+                <div
+                  key={course._id}
+                  className="bg-card border border-border rounded-lg p-6 hover:shadow-lg transition-shadow"
+                >
+                  <div className="mb-4">
+                    <h3 className="text-xl font-semibold text-foreground mb-2">
+                      {course.title}
+                    </h3>
+                    {course.category && (
+                      <p className="text-sm text-muted-foreground mb-1">
+                        {course.category.title}
+                      </p>
+                    )}
+                    {course.instructor && (
+                      <p className="text-sm text-muted-foreground">
+                        Instructor: {course.instructor.name}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Enrollments:</span>
+                      <span className="font-medium text-foreground">
+                        {course.enrollmentCount || 0}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Lessons:</span>
+                      <span className="font-medium text-foreground">
+                        {totalLessons}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Revenue:</span>
+                      <span className="font-medium text-foreground">
+                        ${courseRevenue.toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Price:</span>
+                      <span className="font-medium text-foreground">
+                        {course.isFree
+                          ? "Free"
+                          : `$${(course.price || 0) / 100}`}
+                      </span>
+                    </div>
+                  </div>
+
+                  <Link
+                    href={`/admin/courses/${course._id}`}
+                    className="inline-flex items-center justify-center w-full rounded-lg px-4 py-2 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                  >
+                    View Details
+                  </Link>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="bg-card border border-border rounded-lg p-12 text-center">
+            <BookOpen className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-foreground mb-2">
+              No courses yet
+            </h3>
+            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+              Create your first course in Sanity Studio to get started.
+            </p>
+            <Link
+              href="/studio"
+              className="inline-flex items-center justify-center rounded-lg px-6 py-3 font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              Go to Studio
+            </Link>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+

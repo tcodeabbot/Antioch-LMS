@@ -634,6 +634,7 @@ The application requires the following environment variables:
 - `STRIPE_SECRET_KEY`: Stripe secret key
 - `STRIPE_WEBHOOK_SECRET`: Stripe webhook secret
 - `NEXT_PUBLIC_BASE_URL`: Application base URL
+- `ADMIN_EMAILS`: Comma-separated list of admin email addresses (optional, for admin dashboard access)
 
 ---
 
