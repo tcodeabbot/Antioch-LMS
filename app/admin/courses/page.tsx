@@ -112,9 +112,9 @@ export default async function AdminCoursesPage() {
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">Price</span>
                     <span className="font-medium text-foreground">
-                      {course.isFree
+                      {course.isFree || !course.price || course.price === 0
                         ? "Free"
-                        : `$${(course.price || 0) / 100}`}
+                        : `$${Number(course.price).toFixed(2)}`}
                     </span>
                   </div>
                 </div>
