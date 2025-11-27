@@ -35,7 +35,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <div className="relative h-[60vh] w-full">
+      <div className="relative h-[50vh] min-[400px]:h-[90vh] pt-16 w-full">
         {course.image && (
           <Image
             src={urlFor(course.image).url() || ""}
@@ -46,6 +46,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black to-black/60" />
+
         <div className="absolute inset-0 container mx-auto px-4 flex flex-col justify-end pb-12">
           <Link
             href="/"
