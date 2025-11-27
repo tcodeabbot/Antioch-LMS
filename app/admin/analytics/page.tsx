@@ -1,8 +1,17 @@
 import { redirect } from "next/navigation";
 import { checkAdminAccess } from "@/lib/adminAuth";
 import { getCourseStats } from "@/sanity/lib/admin/getCourseStats";
-import { getAllEnrollments } from "@/sanity/lib/admin/getAllEnrollments";
 import { BarChart3, TrendingUp, Users, BookOpen, DollarSign, GraduationCap } from "lucide-react";
+
+interface Course {
+  _id: string;
+  title: string;
+  enrollmentCount?: number;
+  totalRevenue?: number;
+  category?: {
+    title: string;
+  };
+}
 
 export default async function AdminAnalyticsPage() {
   const auth = await checkAdminAccess();
@@ -12,7 +21,6 @@ export default async function AdminAnalyticsPage() {
   }
 
   const stats = await getCourseStats();
-  const enrollments = await getAllEnrollments();
   
   const revenueInDollars = (stats.totalRevenue || 0) / 100;
   
@@ -30,7 +38,7 @@ export default async function AdminAnalyticsPage() {
 
   // Get top courses by enrollment
   const topCourses = (stats.courses || [])
-    .sort((a: any, b: any) => (b.enrollmentCount || 0) - (a.enrollmentCount || 0))
+    .sort((a: Course, b: Course) => (b.enrollmentCount || 0) - (a.enrollmentCount || 0))
     .slice(0, 5);
 
   return (
@@ -128,7 +136,7 @@ export default async function AdminAnalyticsPage() {
         </h2>
         {topCourses.length > 0 ? (
           <div className="space-y-4">
-            {topCourses.map((course: any, index: number) => (
+            {topCourses.map((course: Course, index: number) => (
               <div
                 key={course._id}
                 className="flex items-center justify-between p-4 bg-muted/50 rounded-lg"

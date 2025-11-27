@@ -4,6 +4,16 @@ import { getAllStudents } from "@/sanity/lib/admin/getAllStudents";
 import { Users, Mail, Calendar, GraduationCap } from "lucide-react";
 import Image from "next/image";
 
+interface Student {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  imageUrl?: string;
+  enrollmentCount?: number;
+  _createdAt?: string;
+}
+
 export default async function AdminStudentsPage() {
   const auth = await checkAdminAccess();
 
@@ -64,7 +74,7 @@ export default async function AdminStudentsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {students.map((student: any) => (
+                {students.map((student: Student) => (
                   <tr
                     key={student._id}
                     className="hover:bg-muted/50 transition-colors"

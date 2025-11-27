@@ -4,6 +4,25 @@ import { getAllEnrollments } from "@/sanity/lib/admin/getAllEnrollments";
 import { GraduationCap, Calendar, DollarSign, User, BookOpen } from "lucide-react";
 import Image from "next/image";
 
+interface Enrollment {
+  _id: string;
+  amount?: number;
+  paymentId?: string;
+  enrolledAt?: string;
+  student?: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    imageUrl?: string;
+  };
+  course?: {
+    title: string;
+    category?: {
+      title: string;
+    };
+  };
+}
+
 export default async function AdminEnrollmentsPage() {
   const auth = await checkAdminAccess();
 
@@ -13,7 +32,7 @@ export default async function AdminEnrollmentsPage() {
 
   const enrollments = await getAllEnrollments();
   const totalRevenue = enrollments.reduce(
-    (sum: number, enrollment: any) => sum + (enrollment.amount || 0),
+    (sum: number, enrollment: Enrollment) => sum + (enrollment.amount || 0),
     0
   ) / 100;
 
@@ -89,7 +108,7 @@ export default async function AdminEnrollmentsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {enrollments.map((enrollment: any) => {
+                {enrollments.map((enrollment: Enrollment) => {
                   const amountInDollars = (enrollment.amount || 0) / 100;
                   return (
                     <tr

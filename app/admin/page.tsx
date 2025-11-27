@@ -1,16 +1,33 @@
 import { redirect } from "next/navigation";
 import { checkAdminAccess } from "@/lib/adminAuth";
 import { getCourseStats } from "@/sanity/lib/admin/getCourseStats";
-import { CourseCard } from "@/components/CourseCard";
-import { 
-  GraduationCap, 
-  BookOpen, 
-  Users, 
-  DollarSign,
-  TrendingUp,
-  Award
+import {
+  GraduationCap,
+  BookOpen,
+  Users,
+  DollarSign
 } from "lucide-react";
 import Link from "next/link";
+
+interface Module {
+  lessonCount?: number;
+}
+
+interface Course {
+  _id: string;
+  title: string;
+  price?: number;
+  isFree?: boolean;
+  totalRevenue?: number;
+  enrollmentCount?: number;
+  category?: {
+    title: string;
+  };
+  instructor?: {
+    name: string;
+  };
+  modules?: Module[];
+}
 
 export default async function AdminDashboardPage() {
   const auth = await checkAdminAccess();
@@ -120,10 +137,10 @@ export default async function AdminDashboardPage() {
 
         {stats.courses && stats.courses.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {stats.courses.map((course: any) => {
+            {stats.courses.map((course: Course) => {
               const courseRevenue = (course.totalRevenue || 0) / 100;
               const totalLessons = course.modules?.reduce(
-                (sum: number, module: any) => sum + (module.lessonCount || 0),
+                (sum: number, module: Module) => sum + (module.lessonCount || 0),
                 0
               ) || 0;
 
