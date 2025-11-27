@@ -34,7 +34,7 @@ export default async function AdminEnrollmentsPage() {
   const totalRevenue = enrollments.reduce(
     (sum: number, enrollment: Enrollment) => sum + (enrollment.amount || 0),
     0
-  ) / 100;
+  );
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -109,7 +109,7 @@ export default async function AdminEnrollmentsPage() {
               </thead>
               <tbody className="divide-y divide-border">
                 {enrollments.map((enrollment: Enrollment) => {
-                  const amountInDollars = (enrollment.amount || 0) / 100;
+                  const amountInDollars = enrollment.amount || 0;
                   return (
                     <tr
                       key={enrollment._id}
