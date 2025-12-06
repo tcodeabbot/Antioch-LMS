@@ -90,6 +90,15 @@ export default async function AdminCoursesPage() {
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <div className="flex items-center gap-2 text-muted-foreground">
+                      <BookOpen className="h-4 w-4" />
+                      <span>Modules</span>
+                    </div>
+                    <span className="font-medium text-foreground">
+                      {course.modules?.length || 0}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-2 text-muted-foreground">
                       <FileText className="h-4 w-4" />
                       <span>Lessons</span>
                     </div>

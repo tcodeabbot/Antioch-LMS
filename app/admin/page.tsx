@@ -173,6 +173,12 @@ export default async function AdminDashboardPage() {
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Modules:</span>
+                      <span className="font-medium text-foreground">
+                        {course.modules?.length || 0}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">Lessons:</span>
                       <span className="font-medium text-foreground">
                         {totalLessons}
