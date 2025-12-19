@@ -33,9 +33,9 @@ export default async function CoursePage({ params }: CoursePageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background -mt-14 sm:-mt-16">
       {/* Hero Section */}
-      <div className="relative h-[50vh] min-[400px]:h-[90vh] pt-16 w-full">
+      <div className="relative h-[60vh] sm:h-[65vh] md:h-[70vh] w-full">
         {course.image && (
           <Image
             src={urlFor(course.image).url() || ""}

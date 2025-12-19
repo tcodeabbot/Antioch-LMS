@@ -33,7 +33,7 @@ export default function RootLayout({
           signInUrl="/sign-in"
           signUpUrl="/sign-up"
           afterSignInUrl="/dashboard"
-          afterSignUpUrl="/dashboard"
+          afterSignUpUrl="/onboarding"
         >
           <ThemeProvider
             attribute="class"

@@ -3,6 +3,7 @@ import { checkAdminAccess } from "@/lib/adminAuth";
 import { getAllStudents } from "@/sanity/lib/admin/getAllStudents";
 import { Users, Mail, Calendar, GraduationCap } from "lucide-react";
 import Image from "next/image";
+import { ExportStudentsButton } from "@/components/admin/ExportStudentsButton";
 
 interface Student {
   _id: string;
@@ -10,6 +11,14 @@ interface Student {
   lastName: string;
   email: string;
   imageUrl?: string;
+  phone?: string;
+  address?: {
+    street?: string;
+    city?: string;
+    state?: string;
+    postalCode?: string;
+    country?: string;
+  };
   enrollmentCount?: number;
   _createdAt?: string;
 }
@@ -26,13 +35,16 @@ export default async function AdminStudentsPage() {
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">
-          Students
-        </h1>
-        <p className="text-muted-foreground">
-          View and manage all enrolled students
-        </p>
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">
+            Students
+          </h1>
+          <p className="text-muted-foreground">
+            View and manage all enrolled students
+          </p>
+        </div>
+        <ExportStudentsButton students={students} />
       </div>
 
       {/* Stats Card */}
@@ -64,6 +76,12 @@ export default async function AdminStudentsPage() {
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Email
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Phone
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Location
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Enrollments
@@ -106,6 +124,23 @@ export default async function AdminStudentsPage() {
                         <Mail className="h-4 w-4" />
                         {student.email}
                       </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="text-sm text-foreground">
+                        {student.phone || "Not provided"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      {student.address ? (
+                        <div className="text-sm text-foreground">
+                          <div>{student.address.city}{student.address.city && student.address.state ? ", " : ""}{student.address.state}</div>
+                          {student.address.country && (
+                            <div className="text-muted-foreground">{student.address.country}</div>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-sm text-muted-foreground">Not provided</span>
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-2">

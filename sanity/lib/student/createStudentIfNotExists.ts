@@ -36,6 +36,7 @@ export async function createStudentIfNotExists({
     firstName,
     lastName,
     imageUrl,
+    onboardingCompleted: false,
   });
 
   console.log("New student created", newStudent);

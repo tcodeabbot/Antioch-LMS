@@ -1,5 +1,6 @@
 import { defineQuery } from "groq";
 import { sanityFetch } from "../live";
+import { clerkClient } from "@clerk/nextjs/server";
 
 export async function getCourseStats() {
   // First, get all enrollments to calculate revenue
@@ -69,10 +70,38 @@ export async function getCourseStats() {
     };
   });
 
+  // Get all students to filter out orphaned ones
+  const studentsQuery = defineQuery(`*[_type == "student"] {
+    _id,
+    clerkId
+  }`);
+
+  const studentsResult = await sanityFetch({
+    query: studentsQuery,
+  });
+
+  const allStudents = studentsResult?.data || [];
+
+  // Count only students with active Clerk accounts
+  const validStudentsCount = await Promise.all(
+    allStudents.map(async (student: any) => {
+      try {
+        const client = await clerkClient();
+        await client.users.getUser(student.clerkId);
+        return 1;
+      } catch (error) {
+        return 0;
+      }
+    })
+  );
+
+  const activeStudentsCount = validStudentsCount.reduce((sum, count) => sum + count, 0);
+
   return {
     ...data,
     courses: coursesWithRevenue,
     totalRevenue,
+    totalStudents: activeStudentsCount, // Override with filtered count
   };
 }
 

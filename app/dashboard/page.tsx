@@ -6,12 +6,19 @@ import { CourseCard } from "@/components/CourseCard";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { GraduationCap, BookOpen, TrendingUp } from "lucide-react";
 import Link from "next/link";
+import { getStudentByClerkId } from "@/sanity/lib/student/getStudentByClerkId";
 
 export default async function DashboardPage() {
   const user = await currentUser();
 
   if (!user?.id) {
     redirect("/sign-in");
+  }
+
+  // Check onboarding status
+  const student = await getStudentByClerkId(user.id);
+  if (!student?.onboardingCompleted) {
+    redirect("/onboarding");
   }
 
   const enrolledCourses = await getEnrolledCourses(user.id);

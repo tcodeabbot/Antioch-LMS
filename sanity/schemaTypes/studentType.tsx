@@ -32,6 +32,49 @@ export const studentType = defineType({
       name: "imageUrl",
       title: "Profile Image URL",
       type: "url"
+    }),
+    defineField({
+      name: "phone",
+      title: "Phone Number",
+      type: "string"
+    }),
+    defineField({
+      name: "address",
+      title: "Address",
+      type: "object",
+      fields: [
+        {
+          name: "street",
+          title: "Street Address",
+          type: "string"
+        },
+        {
+          name: "city",
+          title: "City",
+          type: "string"
+        },
+        {
+          name: "state",
+          title: "State/Province",
+          type: "string"
+        },
+        {
+          name: "postalCode",
+          title: "Postal Code",
+          type: "string"
+        },
+        {
+          name: "country",
+          title: "Country",
+          type: "string"
+        }
+      ]
+    }),
+    defineField({
+      name: "onboardingCompleted",
+      title: "Onboarding Completed",
+      type: "boolean",
+      initialValue: false
     })
   ],
   preview: {

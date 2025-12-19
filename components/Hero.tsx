@@ -1,6 +1,6 @@
 export default function Hero() {
   return (
-    <div className="relative h-[40vh] sm:h-[45vh] md:h-[50vh] w-full">
+    <div className="relative h-[45vh] sm:h-[50vh] md:h-[55vh] w-full -mt-14 sm:-mt-16">
       <div className="absolute inset-0 bg-gradient-to-b from-black/10 to-black/55 dark:from-white/15 dark:to-black/40" />
       <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/20" />
 
