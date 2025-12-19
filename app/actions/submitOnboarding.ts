@@ -16,6 +16,21 @@ interface OnboardingData {
   country: string;
 }
 
+interface StudentData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  onboardingCompleted: boolean;
+  address?: {
+    street: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+  };
+}
+
 export async function submitOnboarding(data: OnboardingData) {
   try {
     const user = await currentUser();
@@ -55,7 +70,7 @@ export async function submitOnboarding(data: OnboardingData) {
       data.country?.trim();
 
     // Prepare the update/create data
-    const studentData: any = {
+    const studentData: StudentData = {
       firstName: data.firstName,
       lastName: data.lastName,
       email: data.email,

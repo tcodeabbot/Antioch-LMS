@@ -19,6 +19,18 @@ interface CourseDetailsPageProps {
   }>;
 }
 
+interface Enrollment {
+  _id: string;
+  enrolledAt?: string;
+  amount?: number;
+  student?: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    imageUrl?: string;
+  };
+}
+
 export default async function CourseDetailsPage({
   params,
 }: CourseDetailsPageProps) {
@@ -226,7 +238,7 @@ export default async function CourseDetailsPage({
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {course.enrollments.map((enrollment: any) => (
+                {course.enrollments.map((enrollment: Enrollment) => (
                   <tr
                     key={enrollment._id}
                     className="hover:bg-muted/50 transition-colors"

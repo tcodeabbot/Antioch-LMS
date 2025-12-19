@@ -110,7 +110,7 @@ export default function OnboardingPage() {
         } else {
           setError(result.error || "Failed to complete onboarding");
         }
-      } catch (err) {
+      } catch {
         setError("An unexpected error occurred");
       }
     });
