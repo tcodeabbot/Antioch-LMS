@@ -37,7 +37,7 @@ export default async function AdminDashboardPage() {
   }
 
   const stats = await getCourseStats();
-  const revenueInDollars = (stats.totalRevenue || 0) / 100;
+  const revenueInDollars = stats.totalRevenue || 0;
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -138,7 +138,7 @@ export default async function AdminDashboardPage() {
         {stats.courses && stats.courses.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {stats.courses.map((course: Course) => {
-              const courseRevenue = (course.totalRevenue || 0) / 100;
+              const courseRevenue = course.totalRevenue || 0;
               const totalLessons = course.modules?.reduce(
                 (sum: number, module: Module) => sum + (module.lessonCount || 0),
                 0
@@ -173,6 +173,12 @@ export default async function AdminDashboardPage() {
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Modules:</span>
+                      <span className="font-medium text-foreground">
+                        {course.modules?.length || 0}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">Lessons:</span>
                       <span className="font-medium text-foreground">
                         {totalLessons}
@@ -190,9 +196,9 @@ export default async function AdminDashboardPage() {
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">Price:</span>
                       <span className="font-medium text-foreground">
-                        {course.isFree
+                        {course.isFree || !course.price || course.price === 0
                           ? "Free"
-                          : `$${(course.price || 0) / 100}`}
+                          : `$${Number(course.price).toFixed(2)}`}
                       </span>
                     </div>
                   </div>

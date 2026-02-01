@@ -51,7 +51,7 @@ export default async function AdminCoursesPage() {
       {courses.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {courses.map((course: Course) => {
-            const courseRevenue = (course.totalRevenue || 0) / 100;
+            const courseRevenue = course.totalRevenue || 0;
             const totalLessons = course.modules?.reduce(
               (sum: number, module: Module) => sum + (module.lessonCount || 0),
               0
@@ -90,6 +90,15 @@ export default async function AdminCoursesPage() {
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <div className="flex items-center gap-2 text-muted-foreground">
+                      <BookOpen className="h-4 w-4" />
+                      <span>Modules</span>
+                    </div>
+                    <span className="font-medium text-foreground">
+                      {course.modules?.length || 0}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-2 text-muted-foreground">
                       <FileText className="h-4 w-4" />
                       <span>Lessons</span>
                     </div>
@@ -112,9 +121,9 @@ export default async function AdminCoursesPage() {
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">Price</span>
                     <span className="font-medium text-foreground">
-                      {course.isFree
+                      {course.isFree || !course.price || course.price === 0
                         ? "Free"
-                        : `$${(course.price || 0) / 100}`}
+                        : `$${Number(course.price).toFixed(2)}`}
                     </span>
                   </div>
                 </div>
