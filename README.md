@@ -1,13 +1,26 @@
-# Antioch Learners Management System
-## 🎯 Overview with Images
-<img width="1623" height="1049" alt="Screenshot 2025-11-10 at 1 19 27 PM" src="https://github.com/user-attachments/assets/6d826aeb-2a78-46c6-adb2-cf4b6832ec2f" />
+# Antioch LMS
 
-<img width="1626" height="1056" alt="Screenshot 2025-11-10 at 1 24 27 PM" src="https://github.com/user-attachments/assets/fcd0d975-9a35-45d7-9b08-49245e7c8233" />
+A comprehensive, modern Learning Management System (LMS) built with cutting-edge web technologies. Antioch LMS provides an intuitive platform for online education, supporting course creation, student enrollment, progress tracking, and secure payment processing.
 
-<img width="1623" height="1060" alt="Screenshot 2025-11-10 at 1 25 02 PM" src="https://github.com/user-attachments/assets/7889574b-438d-4fbf-92d4-bad1654939b8" />
-<img width="1641" height="1056" alt="Screenshot 2025-11-10 at 1 26 04 PM" src="https://github.com/user-attachments/assets/0c041f50-7ff1-4d29-855e-e4f020ad4c27" />
+---
 
+## 📸 Screenshots
 
+<!-- Add your screenshots here -->
+<!-- 
+![Home Page](./screenshots/home.png)
+![Course Dashboard](./screenshots/dashboard.png)
+![Course Content](./screenshots/course-content.png)
+![Lesson View](./screenshots/lesson.png)
+![My Courses](./screenshots/my-courses.png)
+![Admin Studio](./screenshots/admin-studio.png)
+-->
+
+---
+
+## 🎯 Overview
+
+Antioch LMS is a full-featured learning management system designed to deliver a seamless educational experience. The platform combines the power of Next.js 15, Sanity CMS, Clerk authentication, and Stripe payments to create a robust, scalable solution for online learning.
 
 ### Key Highlights
 
@@ -621,7 +634,6 @@ The application requires the following environment variables:
 - `STRIPE_SECRET_KEY`: Stripe secret key
 - `STRIPE_WEBHOOK_SECRET`: Stripe webhook secret
 - `NEXT_PUBLIC_BASE_URL`: Application base URL
-- `ADMIN_EMAILS`: Comma-separated list of admin email addresses (optional, for admin dashboard access)
 
 ---
 

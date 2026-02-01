@@ -1,7 +1,8 @@
 "use client";
 
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
-import { BookMarkedIcon, BookOpen, Search } from "lucide-react";
+import { BookMarkedIcon, Search } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { SearchInput } from "./SearchInput";
@@ -20,14 +21,18 @@ export default function Header() {
             <Link
               href="/"
               prefetch={false}
-              className="flex items-center space-x-1.5 sm:space-x-2 hover:opacity-90 transition-opacity flex-shrink-0"
+              className="flex items-center space-x-2 hover:opacity-90 transition-opacity flex-shrink-0"
               aria-label="Antioch LMS Home"
             >
-              <BookOpen className="h-5 w-5 sm:h-6 sm:w-6 text-primary flex-shrink-0" />
-              <span className="text-base sm:text-lg md:text-xl font-bold bg-gradient-to-r from-primary/90 to-primary bg-clip-text text-transparent whitespace-nowrap">
-                <span className="hidden min-[375px]:inline">Antioch LMS</span>
-                <span className="min-[375px]:hidden">Antioch</span>
-              </span>
+              <Image
+                src="/svgviewer-output.svg"
+                alt="Antioch Christian Resource Center Logo"
+                width={120}
+                height={40}
+                priority
+                className="h-7 w-auto sm:h-8 md:h-9"
+              />
+              <span className="sr-only">Antioch LMS</span>
             </Link>
 
             {/* Desktop Search - Always visible on md+ */}
