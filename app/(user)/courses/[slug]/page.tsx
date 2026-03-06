@@ -35,23 +35,26 @@ export default async function CoursePage({ params }: CoursePageProps) {
   return (
     <div className="min-h-screen bg-background -mt-14 sm:-mt-16">
       {/* Hero Section */}
-      <div className="relative h-[60vh] sm:h-[65vh] md:h-[70vh] w-full">
-        {course.image && (
-          <Image
-            src={urlFor(course.image).url() || ""}
-            alt={course.title || "Course Title"}
-            fill
-            className="object-cover"
-            priority
-          />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black to-black/60" />
+      <div className="relative w-full">
+        <div className="absolute inset-0">
+          {course.image && (
+            <Image
+              src={urlFor(course.image).url() || ""}
+              alt={course.title || "Course Title"}
+              fill
+              sizes="100vw"
+              className="object-cover"
+              priority
+            />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-black to-black/60" />
+        </div>
 
-        <div className="absolute inset-0 container mx-auto px-4 flex flex-col justify-end pb-12">
+        <div className="relative container mx-auto px-4 pt-24 sm:pt-28 pb-10 sm:pb-12">
           <Link
             href="/"
             prefetch={false}
-            className="text-white mb-8 flex items-center hover:text-primary transition-colors w-fit"
+            className="text-white mb-6 sm:mb-8 flex items-center hover:text-primary transition-colors w-fit"
           >
             <ArrowLeft className="mr-2 h-5 w-5" />
             Back to Courses
@@ -137,6 +140,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
                           src={urlFor(course.instructor.photo).url() || ""}
                           alt={course.instructor.name || "Course Instructor"}
                           fill
+                          sizes="48px"
                           className="rounded-full object-cover"
                         />
                       </div>

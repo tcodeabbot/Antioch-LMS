@@ -60,5 +60,12 @@
   },
   "overrides": {
     "@tanstack/react-virtual": "3.9.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp",
+      "unrs-resolver"
+    ]
   }
 }
