@@ -13,14 +13,14 @@ export async function getCourseStats() {
       "category": category->{title},
       "instructor": instructor->{name},
       "enrollmentCount": count(*[_type == "enrollment" && course._ref == ^._id]),
-      "totalRevenue": sum(*[_type == "enrollment" && course._ref == ^._id].amount),
+      "totalRevenue": math::sum(*[_type == "enrollment" && course._ref == ^._id].amount),
       "modules": modules[]-> {
         "lessonCount": count(lessons[]->)
       }
     },
     "totalCourses": count(*[_type == "course"]),
     "totalEnrollments": count(*[_type == "enrollment"]),
-    "totalRevenue": sum(*[_type == "enrollment"].amount),
+    "totalRevenue": math::sum(*[_type == "enrollment"].amount),
     "totalStudents": count(*[_type == "student"])
   }`);
 

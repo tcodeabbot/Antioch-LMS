@@ -12,6 +12,7 @@ import {
   Home,
   Settings,
   BarChart3,
+  UserCog,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -45,6 +46,11 @@ const navigation = [
     name: "Analytics",
     href: "/admin/analytics",
     icon: BarChart3,
+  },
+  {
+    name: "Team",
+    href: "/admin/team",
+    icon: UserCog,
   },
   {
     name: "Studio",
