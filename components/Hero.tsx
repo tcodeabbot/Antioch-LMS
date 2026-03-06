@@ -11,12 +11,7 @@ export default function Hero() {
             Expand Your Knowledge with Our Courses
           </h1>
           <p className="text-base sm:text-lg md:text-xl text-muted-foreground leading-relaxed">
-            Move beyond surface-level understanding and encounter the full
-            richness of God&apos;s Word. Our courses combine Scripture, history,
-            and practical wisdom to help you think biblically and live
-            courageously. Whether you&apos;re a new believer or a seasoned
-            disciple, you&apos;ll find resources that challenge your mind,
-            strengthen your faith, and inspire action in the world around you.
+            I don't want this text
           </p>
         </div>
       </div>

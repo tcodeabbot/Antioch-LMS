@@ -21,8 +21,8 @@ export default async function AdminAnalyticsPage() {
   }
 
   const stats = await getCourseStats();
-  
-  const revenueInDollars = (stats.totalRevenue || 0) / 100;
+
+  const revenueInDollars = stats.totalRevenue || 0;
   
   // Calculate average revenue per enrollment
   const avgRevenuePerEnrollment = 
