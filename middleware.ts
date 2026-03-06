@@ -45,8 +45,10 @@ export default clerkMiddleware(async (auth, req) => {
 
   const isAdminByJwt = metadataRole === 'admin' || isAdminEmail;
 
+  const isPostSignInRedirect = req.nextUrl.pathname === '/auth-redirect';
+
   if (isAdminByJwt) {
-    if (isOnboardingRoute(req) || req.nextUrl.pathname === '/dashboard') {
+    if (isOnboardingRoute(req) || isPostSignInRedirect) {
       return NextResponse.redirect(new URL('/admin', req.url));
     }
     return NextResponse.next();
@@ -60,7 +62,7 @@ export default clerkMiddleware(async (auth, req) => {
     adminEmails.length > 0 && student?.email && adminEmails.includes(student.email);
 
   if (isAdminBySanityEmail) {
-    if (isOnboardingRoute(req) || req.nextUrl.pathname === '/dashboard') {
+    if (isOnboardingRoute(req) || isPostSignInRedirect) {
       return NextResponse.redirect(new URL('/admin', req.url));
     }
     return NextResponse.next();
