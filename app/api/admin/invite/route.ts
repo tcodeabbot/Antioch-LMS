@@ -28,11 +28,20 @@ export async function POST(req: NextRequest) {
   }
 
   // User doesn't exist — send a Clerk invitation with admin role pre-set
-  await client.invitations.createInvitation({
-    emailAddress: email,
-    publicMetadata: { role: "admin" },
-    redirectUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/sign-up`,
-  });
+  try {
+    await client.invitations.createInvitation({
+      emailAddress: email,
+      publicMetadata: { role: "admin" },
+      redirectUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/sign-up`,
+    });
+  } catch (err: unknown) {
+    const clerkError = err as { errors?: { message: string; longMessage?: string }[] };
+    const message =
+      clerkError?.errors?.[0]?.longMessage ||
+      clerkError?.errors?.[0]?.message ||
+      "Failed to send invitation. Check that invitations are enabled in your Clerk dashboard.";
+    return NextResponse.json({ error: message }, { status: 400 });
+  }
 
   return NextResponse.json({ message: "Invitation sent successfully." });
 }
@@ -48,15 +57,19 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ error: "userId is required" }, { status: 400 });
   }
 
-  // Prevent self-demotion
+  // Prevent self-deletion
   if (userId === auth.userId) {
-    return NextResponse.json({ error: "You cannot remove your own admin access." }, { status: 400 });
+    return NextResponse.json({ error: "You cannot delete your own admin account." }, { status: 400 });
   }
 
-  const client = await clerkClient();
-  await client.users.updateUserMetadata(userId, {
-    publicMetadata: { role: null },
-  });
+  try {
+    const client = await clerkClient();
+    await client.users.deleteUser(userId);
+  } catch (err: unknown) {
+    const clerkError = err as { errors?: { message: string }[] };
+    const message = clerkError?.errors?.[0]?.message || "Failed to delete user.";
+    return NextResponse.json({ error: message }, { status: 400 });
+  }
 
-  return NextResponse.json({ message: "Admin access revoked." });
+  return NextResponse.json({ message: "User deleted successfully." });
 }

@@ -19,8 +19,8 @@ export function AdminUserList({ users }: { users: AdminUser[] }) {
   const [removing, setRemoving] = useState<string | null>(null);
   const router = useRouter();
 
-  async function handleRemove(userId: string) {
-    if (!confirm("Remove admin access for this user?")) return;
+  async function handleRemove(userId: string, name: string) {
+    if (!confirm(`Permanently delete ${name}'s account? This cannot be undone.`)) return;
     setRemoving(userId);
     try {
       const res = await fetch("/api/admin/invite", {
@@ -32,7 +32,7 @@ export function AdminUserList({ users }: { users: AdminUser[] }) {
       if (!res.ok) throw new Error(data.error);
       router.refresh();
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Failed to remove admin.");
+      alert(err instanceof Error ? err.message : "Failed to delete user.");
     } finally {
       setRemoving(null);
     }
@@ -74,7 +74,7 @@ export function AdminUserList({ users }: { users: AdminUser[] }) {
                 variant="ghost"
                 size="icon"
                 className="text-destructive hover:text-destructive"
-                onClick={() => handleRemove(user.id)}
+                onClick={() => handleRemove(user.id, user.name)}
                 disabled={removing === user.id}
               >
                 <Trash2 className="h-4 w-4" />

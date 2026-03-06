@@ -14,8 +14,10 @@ const isPublicRoute = createRouteMatcher([
 
 const isOnboardingRoute = createRouteMatcher(['/onboarding(.*)']);
 
+const isAdminRoute = createRouteMatcher(['/admin(.*)']);
+
 export default clerkMiddleware(async (auth, req) => {
-  const { userId } = await auth();
+  const { userId, sessionClaims } = await auth();
 
   // Allow public routes
   if (isPublicRoute(req)) {
@@ -23,34 +25,63 @@ export default clerkMiddleware(async (auth, req) => {
   }
 
   // Require authentication for all non-public routes
-  if (!userId && !isPublicRoute(req)) {
+  if (!userId) {
     const signInUrl = new URL('/sign-in', req.url);
     signInUrl.searchParams.set('redirect_url', req.url);
     return NextResponse.redirect(signInUrl);
   }
 
-  // Check onboarding status for authenticated users
-  if (userId) {
-    const student = await getStudentByClerkIdForMiddleware(userId);
-    const hasCompletedOnboarding = student?.onboardingCompleted === true;
+  // Check admin role — Clerk stores publicMetadata in sessionClaims.
+  // Try both paths since it depends on JWT template configuration.
+  const metadataRole =
+    (sessionClaims?.metadata as { role?: string } | undefined)?.role ||
+    (sessionClaims?.publicMetadata as { role?: string } | undefined)?.role;
 
-    // If user hasn't completed onboarding
-    if (!hasCompletedOnboarding) {
-      // Allow access to onboarding page
-      if (isOnboardingRoute(req)) {
-        return NextResponse.next();
-      }
+  const adminEmails = process.env.ADMIN_EMAILS?.split(',').map((e) => e.trim()) ?? [];
 
-      // Redirect to onboarding for any other protected route
-      if (!isPublicRoute(req)) {
-        return NextResponse.redirect(new URL('/onboarding', req.url));
-      }
+  // Check email-based admin (from sessionClaims if available, fallback to Sanity)
+  const sessionEmail = (sessionClaims?.email as string | undefined) ?? '';
+  const isAdminEmail = adminEmails.length > 0 && adminEmails.includes(sessionEmail);
+
+  const isAdminByJwt = metadataRole === 'admin' || isAdminEmail;
+
+  if (isAdminByJwt) {
+    if (isOnboardingRoute(req) || req.nextUrl.pathname === '/dashboard') {
+      return NextResponse.redirect(new URL('/admin', req.url));
     }
+    return NextResponse.next();
+  }
 
-    // If user has completed onboarding and tries to access onboarding page
-    if (hasCompletedOnboarding && isOnboardingRoute(req)) {
-      return NextResponse.redirect(new URL('/dashboard', req.url));
+  // For users where JWT doesn't have role/email, fetch from Sanity as fallback
+  const student = await getStudentByClerkIdForMiddleware(userId);
+
+  // Check ADMIN_EMAILS against the Sanity student email
+  const isAdminBySanityEmail =
+    adminEmails.length > 0 && student?.email && adminEmails.includes(student.email);
+
+  if (isAdminBySanityEmail) {
+    if (isOnboardingRoute(req) || req.nextUrl.pathname === '/dashboard') {
+      return NextResponse.redirect(new URL('/admin', req.url));
     }
+    return NextResponse.next();
+  }
+
+  // Block non-admins from /admin
+  if (isAdminRoute(req)) {
+    return NextResponse.redirect(new URL('/dashboard', req.url));
+  }
+
+  const hasCompletedOnboarding = student?.onboardingCompleted === true;
+
+  if (!hasCompletedOnboarding) {
+    if (isOnboardingRoute(req)) {
+      return NextResponse.next();
+    }
+    return NextResponse.redirect(new URL('/onboarding', req.url));
+  }
+
+  if (hasCompletedOnboarding && isOnboardingRoute(req)) {
+    return NextResponse.redirect(new URL('/dashboard', req.url));
   }
 
   return NextResponse.next();
@@ -58,9 +89,7 @@ export default clerkMiddleware(async (auth, req) => {
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
     '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    // Always run for API routes
     '/(api|trpc)(.*)',
   ],
 };
