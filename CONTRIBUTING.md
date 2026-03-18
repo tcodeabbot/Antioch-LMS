@@ -389,21 +389,6 @@ If you see CORS errors related to Sanity, add `http://localhost:3000` as an allo
 
 ---
 
-## Code of Conduct
-
-We are committed to providing a welcoming and inclusive experience for everyone. By participating in this project, you agree to:
-
-- **Be respectful** — Treat everyone with dignity and respect
-- **Be constructive** — Offer helpful feedback and be open to receiving it
-- **Be collaborative** — Work together toward shared goals
-- **Be inclusive** — Welcome people of all backgrounds and skill levels
-
-Harassment, discrimination, and disrespectful behavior will not be tolerated. Maintainers reserve the right to remove content or block contributors who violate these principles.
-
----
-
 ## Questions?
 
-If you have questions or need help getting started, feel free to [open an issue](https://github.com/tcodeabbot/Antioch-LMS/issues) on GitHub. We're happy to help!
-
-Thank you for contributing to Antioch LMS.
+If you have questions or need help getting started, feel free to [open an issue](https://github.com/tcodeabbot/Antioch-LMS/issues) on GitHub. 

@@ -5,7 +5,8 @@ import { ClerkProvider } from "@clerk/nextjs";
 
 export const metadata: Metadata = {
   title: "Antioch LMS",
-  description: "Antioch LMS is a learning management system for Antioch Christian Resource Center. We are a non-profit organization that provides free material to learn about the Bible and the Christian faith."
+  description: "Antioch LMS is a learning management system for Antioch Christian Resource Center. We are a non-profit organization that provides free material to learn about the Bible and the Christian faith.",
+};
 
 export default function RootLayout({
   children
