@@ -1,4 +1,4 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+import { clerkMiddleware, clerkClient, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { getStudentByClerkIdForMiddleware } from '@/sanity/lib/student/getStudentByClerkIdForMiddleware';
 
@@ -16,6 +16,18 @@ const isOnboardingRoute = createRouteMatcher(['/onboarding(.*)']);
 
 const isAdminRoute = createRouteMatcher(['/admin(.*)']);
 
+async function checkIsAdmin(userId: string, sessionClaims: CustomJwtSessionClaims | null): Promise<boolean> {
+  // Fast path: check JWT session claims (works when session token is configured)
+  if (sessionClaims?.metadata?.role === 'admin') {
+    return true;
+  }
+
+  // Fallback: fetch user's publicMetadata directly from Clerk API
+  const client = await clerkClient();
+  const user = await client.users.getUser(userId);
+  return user.publicMetadata?.role === 'admin';
+}
+
 export default clerkMiddleware(async (auth, req) => {
   const { userId, sessionClaims } = await auth();
 
@@ -29,19 +41,22 @@ export default clerkMiddleware(async (auth, req) => {
     return NextResponse.redirect(signInUrl);
   }
 
-  const role = sessionClaims?.metadata?.role;
-  const isAdmin = role === 'admin';
   const isPostSignInRedirect = req.nextUrl.pathname === '/auth-redirect';
+  const needsAdminCheck = isAdminRoute(req) || isOnboardingRoute(req) || isPostSignInRedirect;
 
-  if (isAdmin) {
-    if (isOnboardingRoute(req) || isPostSignInRedirect) {
-      return NextResponse.redirect(new URL('/admin', req.url));
+  if (needsAdminCheck) {
+    const isAdmin = await checkIsAdmin(userId, sessionClaims as CustomJwtSessionClaims | null);
+
+    if (isAdmin) {
+      if (isOnboardingRoute(req) || isPostSignInRedirect) {
+        return NextResponse.redirect(new URL('/admin', req.url));
+      }
+      return NextResponse.next();
     }
-    return NextResponse.next();
-  }
 
-  if (isAdminRoute(req)) {
-    return NextResponse.redirect(new URL('/dashboard', req.url));
+    if (isAdminRoute(req)) {
+      return NextResponse.redirect(new URL('/dashboard', req.url));
+    }
   }
 
   const student = await getStudentByClerkIdForMiddleware(userId);
