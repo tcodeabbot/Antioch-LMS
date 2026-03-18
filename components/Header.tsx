@@ -1,60 +1,37 @@
 "use client";
 
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
-import { BookMarkedIcon, Search } from "lucide-react";
+import { BookMarkedIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
-import { SearchInput } from "./SearchInput";
 import { Button } from "./ui/button";
 import DarkModeToggle from "./DarkModeToggle";
 
 export default function Header() {
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border supports-[backdrop-filter]:bg-background/80">
       <div className="container mx-auto px-3 sm:px-4">
         <div className="flex h-14 sm:h-16 items-center justify-between gap-2 sm:gap-4">
-          {/* Left section: Logo and Search */}
-          <div className="flex items-center gap-2 sm:gap-3 md:gap-4 min-w-0 flex-1">
-            <Link
-              href="/"
-              prefetch={false}
-              className="flex items-center space-x-2 hover:opacity-90 transition-opacity flex-shrink-0"
-              aria-label="Antioch LMS Home"
-            >
-              <Image
-                src="/svgviewer-output.svg"
-                alt="Antioch Christian Resource Center Logo"
-                width={120}
-                height={40}
-                priority
-                className="h-7 w-auto sm:h-8 md:h-9"
-              />
-              <span className="sr-only">Antioch LMS</span>
-            </Link>
-
-            {/* Desktop Search - Always visible on md+ */}
-            <div className="hidden md:block flex-1 max-w-md">
-              <SearchInput onSearch={() => setIsSearchOpen(false)} />
-            </div>
-
-            {/* Mobile Search Toggle */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden flex-shrink-0 h-9 w-9"
-              onClick={() => setIsSearchOpen(!isSearchOpen)}
-              aria-label="Toggle search"
-            >
-              <Search className="h-4 w-4 sm:h-5 sm:w-5" />
-            </Button>
-          </div>
+          {/* Logo */}
+          <Link
+            href="/"
+            prefetch={false}
+            className="flex items-center space-x-2 hover:opacity-90 transition-opacity flex-shrink-0"
+            aria-label="Antioch LMS Home"
+          >
+            <Image
+              src="/svgviewer-output.svg"
+              alt="Antioch Christian Resource Center Logo"
+              width={120}
+              height={40}
+              priority
+              className="h-7 w-auto sm:h-8 md:h-9"
+            />
+            <span className="sr-only">Antioch LMS</span>
+          </Link>
 
           {/* Right section: Navigation and Auth */}
           <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 lg:gap-4 flex-shrink-0">
-            {/* Dashboard Link */}
             <SignedIn>
               <nav className="hidden sm:block">
                 <Link
@@ -68,7 +45,6 @@ export default function Header() {
                 </Link>
               </nav>
 
-              {/* Mobile My Courses Icon */}
               <Link
                 prefetch={false}
                 href="/my-courses"
@@ -79,12 +55,10 @@ export default function Header() {
               </Link>
             </SignedIn>
 
-            {/* Dark Mode Toggle */}
             <div className="flex-shrink-0">
               <DarkModeToggle />
             </div>
 
-            {/* Auth Section */}
             <div className="flex-shrink-0">
               <SignedIn>
                 <UserButton
@@ -103,21 +77,13 @@ export default function Header() {
                     size="sm"
                     className="h-8 px-2.5 sm:h-9 sm:px-3 md:px-4 text-xs sm:text-sm"
                   >
-                    <span className="hidden sm:inline">Sign In</span>
-                    <span className="sm:hidden">Sign In</span>
+                    Sign In
                   </Button>
                 </SignInButton>
               </SignedOut>
             </div>
           </div>
         </div>
-
-        {/* Mobile Search Bar - Expandable */}
-        {isSearchOpen && (
-          <div className="md:hidden border-t border-border px-3 py-2.5 animate-in slide-in-from-top-2">
-            <SearchInput onSearch={() => setIsSearchOpen(false)} />
-          </div>
-        )}
       </div>
     </header>
   );
