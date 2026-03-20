@@ -168,7 +168,7 @@ export default function Footer() {
               />
               <button
                 type="submit"
-                className="rounded-md bg-[#720000] px-5 py-2 text-sm font-medium text-white hover:bg-[#5a0000] transition-colors"
+                className="rounded-md bg-primary px-5 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
               >
                 Submit
               </button>
