@@ -81,12 +81,12 @@ export function LessonCompleteButton({
           onClick={handleToggle}
           disabled={isPending || isLoading}
           size="lg"
-          variant="default"
+          variant={isCompleted ? "outline" : "default"}
           className={cn(
             "min-w-[200px] transition-all duration-200 ease-in-out",
             isCompleted
-              ? "bg-red-600 hover:bg-red-700 text-white"
-              : "bg-green-600 hover:bg-green-700 text-white"
+              ? "border-border text-muted-foreground hover:bg-muted hover:text-foreground"
+              : "bg-emerald-600 hover:bg-emerald-700 text-white"
           )}
         >
           {isLoading ? (
@@ -97,7 +97,7 @@ export function LessonCompleteButton({
           ) : isPending ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              {isCompleted ? "Uncompleting..." : "Completing..."}
+              {isCompleted ? "Updating..." : "Completing..."}
             </>
           ) : isCompleted ? (
             <>

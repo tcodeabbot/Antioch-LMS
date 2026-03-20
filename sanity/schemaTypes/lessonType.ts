@@ -60,6 +60,14 @@ export const lessonType = defineType({
         }),
     }),
     defineField({
+      name: "duration",
+      title: "Duration (minutes)",
+      type: "number",
+      description:
+        "Estimated time to complete this lesson in minutes. If left empty, an estimate is calculated automatically.",
+      validation: (rule) => rule.min(0),
+    }),
+    defineField({
       name: "content",
       title: "Content",
       type: "array",
