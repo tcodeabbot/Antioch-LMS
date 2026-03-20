@@ -39,6 +39,20 @@ export const courseType = defineType({
       type: "image",
     }),
     defineField({
+      name: "previewThumbnail",
+      title: "Preview Thumbnail",
+      type: "image",
+      description:
+        "Thumbnail image shown on the course preview card (falls back to Course Image if not set)",
+    }),
+    defineField({
+      name: "previewVideoUrl",
+      title: "Preview Video URL",
+      type: "url",
+      description:
+        "A short preview/trailer video for the course (YouTube, Vimeo, or Loom URL)",
+    }),
+    defineField({
       name: "category",
       title: "Category",
       type: "reference",

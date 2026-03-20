@@ -17,7 +17,7 @@ export const VideoPlayer = ({ url }: VideoPlayerProps) => {
   return (
     <div className="relative aspect-video">
       <ReactPlayer
-        src={url}
+        url={url}
         width="100%"
         height="100%"
         controls
