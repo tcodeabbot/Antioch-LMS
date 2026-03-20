@@ -14,6 +14,7 @@ import {
 import { getLessonNavData } from "@/lib/lessonNavigation";
 import { Download, FileText } from "lucide-react";
 import { dataset, projectId } from "@/sanity/env";
+import { LessonNotes } from "@/components/LessonNotes";
 
 interface LessonPageProps {
   params: Promise<{
@@ -106,6 +107,10 @@ export default async function LessonPage({ params }: LessonPageProps) {
                 </div>
               </div>
             )}
+          </div>
+
+          <div className="mt-8">
+            <LessonNotes lessonId={lesson._id} />
           </div>
 
           <LessonBottomNav
