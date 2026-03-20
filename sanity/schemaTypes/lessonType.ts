@@ -68,6 +68,25 @@ export const lessonType = defineType({
       validation: (rule) => rule.min(0),
     }),
     defineField({
+      name: "resources",
+      title: "Resources",
+      type: "array",
+      description: "Downloadable files for this lesson (PDFs, worksheets, etc.)",
+      of: [
+        {
+          type: "file",
+          fields: [
+            defineField({
+              name: "title",
+              title: "Title",
+              type: "string",
+              validation: (rule) => rule.required(),
+            }),
+          ],
+        },
+      ],
+    }),
+    defineField({
       name: "content",
       title: "Content",
       type: "array",

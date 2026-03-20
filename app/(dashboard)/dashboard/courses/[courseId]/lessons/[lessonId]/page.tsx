@@ -12,6 +12,8 @@ import {
   AutoAdvanceHandler,
 } from "@/components/LessonNavigation";
 import { getLessonNavData } from "@/lib/lessonNavigation";
+import { Download, FileText } from "lucide-react";
+import { dataset, projectId } from "@/sanity/env";
 
 interface LessonPageProps {
   params: Promise<{
@@ -69,6 +71,38 @@ export default async function LessonPage({ params }: LessonPageProps) {
                 <h2 className="text-xl font-semibold mb-4">Lesson Notes</h2>
                 <div className="prose prose-blue dark:prose-invert max-w-none">
                   <PortableText value={lesson.content} />
+                </div>
+              </div>
+            )}
+
+            {(lesson as any).resources?.length > 0 && (
+              <div>
+                <h2 className="text-xl font-semibold mb-4">Resources</h2>
+                <div className="space-y-2">
+                  {(lesson as any).resources.map(
+                    (resource: any, idx: number) => {
+                      const ref = resource.asset?._ref;
+                      if (!ref) return null;
+                      const [, id, ext] = ref.split("-");
+                      const fileUrl = `https://cdn.sanity.io/files/${projectId}/${dataset}/${id}.${ext}`;
+                      return (
+                        <a
+                          key={idx}
+                          href={fileUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          download
+                          className="flex items-center gap-3 px-4 py-3 rounded-lg border border-border hover:bg-muted transition-colors group"
+                        >
+                          <FileText className="h-5 w-5 text-primary flex-shrink-0" />
+                          <span className="text-sm font-medium flex-1">
+                            {resource.title || "Download file"}
+                          </span>
+                          <Download className="h-4 w-4 text-muted-foreground group-hover:text-foreground" />
+                        </a>
+                      );
+                    }
+                  )}
                 </div>
               </div>
             )}
