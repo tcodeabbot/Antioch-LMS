@@ -43,17 +43,17 @@ export default async function LessonPage({ params }: LessonPageProps) {
   return (
     <div className="h-full flex flex-col overflow-hidden">
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-4xl mx-auto pt-8 pb-28 px-4">
+        <div className="max-w-4xl mx-auto pt-4 sm:pt-8 pb-32 sm:pb-28 px-3 sm:px-4">
           <LessonTopBar
             currentIndex={nav.currentIndex}
             totalLessons={nav.totalLessons}
             durationMinutes={nav.durationMinutes}
           />
 
-          <h1 className="text-2xl font-bold mb-4">{lesson.title}</h1>
+          <h1 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">{lesson.title}</h1>
 
           {lesson.description && (
-            <p className="text-muted-foreground mb-8">{lesson.description}</p>
+            <p className="text-sm sm:text-base text-muted-foreground mb-6 sm:mb-8">{lesson.description}</p>
           )}
 
           <div className="space-y-8">

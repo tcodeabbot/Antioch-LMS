@@ -63,9 +63,9 @@ export function LessonCompleteButton({
   const isLoading = isCompleted === null || isPendingTransition;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-sm border-t z-50">
-      <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
-        <div className="flex-1">
+    <div className="fixed bottom-0 left-[60px] lg:left-96 right-0 p-3 sm:p-4 bg-background/80 backdrop-blur-sm border-t z-50">
+      <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
+        <div className="hidden sm:block flex-1">
           <p className="text-sm font-medium">
             {isCompleted
               ? "Lesson completed!"
@@ -83,7 +83,7 @@ export function LessonCompleteButton({
           size="lg"
           variant={isCompleted ? "outline" : "default"}
           className={cn(
-            "min-w-[200px] transition-all duration-200 ease-in-out",
+            "w-full sm:w-auto sm:min-w-[200px] transition-all duration-200 ease-in-out",
             isCompleted
               ? "border-border text-muted-foreground hover:bg-muted hover:text-foreground"
               : "bg-emerald-600 hover:bg-emerald-700 text-white"

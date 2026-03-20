@@ -48,17 +48,17 @@ const socialLinks = [
 export default function Footer() {
   return (
     <footer className="bg-muted/50 border-t border-border">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+      <div className="container mx-auto px-4 py-8 sm:py-12">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-10">
           {/* Logo & Social */}
-          <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-4 col-span-2 md:col-span-1">
             <Link href="/" className="inline-block">
               <Image
                 src="/svgviewer-output.svg"
                 alt="Antioch Christian Resource Center Logo"
                 width={140}
                 height={48}
-                className="h-10 w-auto"
+                className="h-8 sm:h-10 w-auto"
               />
             </Link>
             <div className="flex items-center gap-3">
@@ -155,7 +155,7 @@ export default function Footer() {
             <h3 className="text-lg font-semibold italic text-foreground mb-1">
               Subscribe to Get Exclusive Updates
             </h3>
-            <form className="mt-4 flex gap-2">
+            <form className="mt-4 flex flex-col sm:flex-row gap-2">
               <label htmlFor="footer-email" className="sr-only">
                 Email
               </label>

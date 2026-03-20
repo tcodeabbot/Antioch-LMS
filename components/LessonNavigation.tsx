@@ -23,14 +23,14 @@ export function LessonTopBar({
   durationMinutes,
 }: LessonTopBarProps) {
   return (
-    <div className="flex items-center gap-4 mb-6 text-sm text-muted-foreground">
+    <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-4 sm:mb-6 text-xs sm:text-sm text-muted-foreground">
       <span className="flex items-center gap-1.5">
-        <BookOpen className="h-4 w-4" />
+        <BookOpen className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
         Lesson {currentIndex + 1} of {totalLessons}
       </span>
       {durationMinutes != null && durationMinutes > 0 && (
         <span className="flex items-center gap-1.5">
-          <Clock className="h-4 w-4" />
+          <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           {durationMinutes} min
         </span>
       )}
@@ -50,11 +50,11 @@ export function LessonBottomNav({
   nextLesson,
 }: LessonBottomNavProps) {
   return (
-    <div className="flex items-center justify-between gap-4 mt-10 pt-6 border-t border-border">
+    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 mt-8 sm:mt-10 pt-6 border-t border-border">
       {prevLesson ? (
         <Link
           href={`/dashboard/courses/${courseId}/lessons/${prevLesson._id}`}
-          className="flex items-center gap-3 px-4 py-3 rounded-lg border border-border hover:bg-muted transition-colors group max-w-[45%]"
+          className="flex items-center gap-3 px-4 py-3 rounded-lg border border-border hover:bg-muted transition-colors group sm:max-w-[45%]"
         >
           <ChevronLeft className="h-5 w-5 text-muted-foreground group-hover:text-foreground flex-shrink-0" />
           <div className="text-left min-w-0">
@@ -69,16 +69,16 @@ export function LessonBottomNav({
       {nextLesson ? (
         <Link
           href={`/dashboard/courses/${courseId}/lessons/${nextLesson._id}`}
-          className="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors group max-w-[45%]"
+          className="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors group sm:max-w-[45%] sm:ml-auto"
         >
-          <div className="text-right min-w-0">
+          <div className="text-right min-w-0 flex-1 sm:flex-initial">
             <p className="text-xs text-primary-foreground/70">Next</p>
             <p className="text-sm font-medium truncate">{nextLesson.title}</p>
           </div>
           <ChevronRight className="h-5 w-5 flex-shrink-0" />
         </Link>
       ) : (
-        <div className="px-4 py-3 rounded-lg bg-muted text-muted-foreground text-sm font-medium">
+        <div className="px-4 py-3 rounded-lg bg-muted text-muted-foreground text-sm font-medium text-center sm:text-left sm:ml-auto">
           Course complete!
         </div>
       )}

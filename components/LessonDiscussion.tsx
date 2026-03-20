@@ -126,9 +126,8 @@ export function LessonDiscussion({ lessonId }: LessonDiscussionProps) {
                   className="w-full p-2 text-sm bg-muted/30 border border-border rounded-lg resize-none focus:outline-none focus:ring-1 focus:ring-primary placeholder:text-muted-foreground/60"
                 />
                 <div className="flex items-center justify-between mt-2">
-                  <span className="text-xs text-muted-foreground">
-                    {navigator.platform?.includes("Mac") ? "⌘" : "Ctrl"}+Enter
-                    to post
+                  <span className="text-xs text-muted-foreground hidden sm:inline">
+                    ⌘/Ctrl+Enter to post
                   </span>
                   <button
                     onClick={handleSubmit}
@@ -189,7 +188,7 @@ export function LessonDiscussion({ lessonId }: LessonDiscussionProps) {
                             {isOwn && (
                               <button
                                 onClick={() => handleDelete(comment._id)}
-                                className="ml-auto opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all"
+                                className="ml-auto opacity-100 sm:opacity-0 sm:group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all"
                                 title="Delete comment"
                               >
                                 <Trash2 className="h-3.5 w-3.5" />
