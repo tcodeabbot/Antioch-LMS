@@ -17,6 +17,7 @@ import { Download, FileText } from "lucide-react";
 import { dataset, projectId } from "@/sanity/env";
 import { LessonNotes } from "@/components/LessonNotes";
 import { LessonDiscussion } from "@/components/LessonDiscussion";
+import { LessonQuiz } from "@/components/LessonQuiz";
 
 interface LessonPageProps {
   params: Promise<{
@@ -112,6 +113,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
           </div>
 
           <div className="mt-8 space-y-4">
+            <LessonQuiz lessonId={lesson._id} />
             <LessonNotes lessonId={lesson._id} />
             <LessonDiscussion lessonId={lesson._id} />
           </div>

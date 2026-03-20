@@ -11,6 +11,7 @@ import { categoryType } from "./categoryType";
 import { lessonCompletionType } from "./lessonCompletionType";
 import { lessonNoteType } from "./lessonNoteType";
 import { lessonCommentType } from "./lessonCommentType";
+import { quizType, quizQuestionType, quizAttemptType } from "./quizType";
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -25,5 +26,8 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     lessonCompletionType,
     lessonNoteType,
     lessonCommentType,
+    quizQuestionType,
+    quizType,
+    quizAttemptType,
   ],
 };
