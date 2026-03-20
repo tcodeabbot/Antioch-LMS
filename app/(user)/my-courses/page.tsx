@@ -5,6 +5,7 @@ import Link from "next/link";
 import { GraduationCap } from "lucide-react";
 import { getCourseProgress } from "@/sanity/lib/lessons/getCourseProgress";
 import { CourseCard } from "@/components/CourseCard";
+import { LearningStreak } from "@/components/LearningStreak";
 
 export default async function MyCoursesPage() {
   const user = await currentUser();
@@ -30,10 +31,16 @@ export default async function MyCoursesPage() {
   return (
     <div className="h-full">
       <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center gap-4 mb-8">
+        <div className="flex items-center gap-4 mb-6">
           <GraduationCap className="h-8 w-8 text-primary" />
           <h1 className="text-3xl font-bold">My Courses</h1>
         </div>
+
+        {enrolledCourses.length > 0 && (
+          <div className="mb-8">
+            <LearningStreak />
+          </div>
+        )}
 
         {enrolledCourses.length === 0 ? (
           <div className="text-center py-12">
