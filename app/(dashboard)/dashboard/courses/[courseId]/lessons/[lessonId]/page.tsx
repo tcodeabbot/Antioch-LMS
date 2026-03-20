@@ -10,6 +10,7 @@ import {
   LessonTopBar,
   LessonBottomNav,
   AutoAdvanceHandler,
+  KeyboardShortcuts,
 } from "@/components/LessonNavigation";
 import { getLessonNavData } from "@/lib/lessonNavigation";
 import { Download, FileText } from "lucide-react";
@@ -123,6 +124,11 @@ export default async function LessonPage({ params }: LessonPageProps) {
         </div>
       </div>
 
+      <KeyboardShortcuts
+        courseId={courseId}
+        prevLessonId={nav.prevLesson?._id || null}
+        nextLessonId={nav.nextLesson?._id || null}
+      />
       <LessonCompleteButton lessonId={lesson._id} clerkId={user!.id} />
     </div>
   );

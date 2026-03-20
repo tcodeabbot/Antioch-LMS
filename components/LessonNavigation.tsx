@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { ChevronLeft, ChevronRight, BookOpen, Clock } from "lucide-react";
 
 interface LessonInfo {
@@ -104,6 +104,41 @@ export function AutoAdvanceHandler({
   if (typeof window !== "undefined") {
     (window as any).__lessonAutoAdvance = handleVideoEnded;
   }
+
+  return null;
+}
+
+interface KeyboardShortcutsProps {
+  courseId: string;
+  prevLessonId: string | null;
+  nextLessonId: string | null;
+}
+
+export function KeyboardShortcuts({
+  courseId,
+  prevLessonId,
+  nextLessonId,
+}: KeyboardShortcutsProps) {
+  const router = useRouter();
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+      if ((e.target as HTMLElement)?.isContentEditable) return;
+
+      if (e.key === "ArrowLeft" && prevLessonId) {
+        e.preventDefault();
+        router.push(`/dashboard/courses/${courseId}/lessons/${prevLessonId}`);
+      } else if (e.key === "ArrowRight" && nextLessonId) {
+        e.preventDefault();
+        router.push(`/dashboard/courses/${courseId}/lessons/${nextLessonId}`);
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [courseId, prevLessonId, nextLessonId, router]);
 
   return null;
 }
