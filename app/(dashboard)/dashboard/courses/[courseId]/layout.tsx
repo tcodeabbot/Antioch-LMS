@@ -39,7 +39,12 @@ export default async function CourseLayout({
 
   return (
     <div className="h-full">
-      <Sidebar course={course} completedLessons={progress.completedLessons} />
+      <Sidebar
+        course={course}
+        completedLessons={progress.completedLessons}
+        studentName={`${user.firstName || ""} ${user.lastName || ""}`.trim() || "Student"}
+        courseProgress={progress.courseProgress}
+      />
       <main className="h-full lg:pt-[64px] pl-[60px] lg:pl-96">{children}</main>
     </div>
   );

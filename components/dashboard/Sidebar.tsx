@@ -34,13 +34,16 @@ import {
 import DarkModeToggle from "../DarkModeToggle";
 import { CourseProgress } from "@/components/CourseProgress";
 import { calculateCourseProgress } from "@/lib/courseProgress";
+import { CourseCertificate } from "@/components/CourseCertificate";
 
 interface SidebarProps {
   course: GetCourseByIdQueryResult;
   completedLessons?: GetCompletionsQueryResult["completedLessons"];
+  studentName?: string;
+  courseProgress?: number;
 }
 
-export function Sidebar({ course, completedLessons = [] }: SidebarProps) {
+export function Sidebar({ course, completedLessons = [], studentName = "Student", courseProgress }: SidebarProps) {
   const pathname = usePathname();
   const { isOpen, toggle, close } = useSidebar();
   const [isMounted, setIsMounted] = useState(false);
@@ -109,6 +112,18 @@ export function Sidebar({ course, completedLessons = [] }: SidebarProps) {
             variant="success"
             label="Course Progress"
           />
+          {(courseProgress ?? progress) >= 100 && (
+            <CourseCertificate
+              studentName={studentName}
+              courseTitle={course.title || "Course"}
+              completionDate={new Date().toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+              progress={courseProgress ?? progress}
+            />
+          )}
         </div>
       </div>
       <ScrollArea className="flex-1">
