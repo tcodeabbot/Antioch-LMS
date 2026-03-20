@@ -6,6 +6,7 @@ import { GraduationCap } from "lucide-react";
 import { getCourseProgress } from "@/sanity/lib/lessons/getCourseProgress";
 import { CourseCard } from "@/components/CourseCard";
 import { LearningStreak } from "@/components/LearningStreak";
+import { BookmarksList } from "@/components/BookmarksList";
 
 export default async function MyCoursesPage() {
   const user = await currentUser();
@@ -37,8 +38,9 @@ export default async function MyCoursesPage() {
         </div>
 
         {enrolledCourses.length > 0 && (
-          <div className="mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
             <LearningStreak />
+            <BookmarksList />
           </div>
         )}
 

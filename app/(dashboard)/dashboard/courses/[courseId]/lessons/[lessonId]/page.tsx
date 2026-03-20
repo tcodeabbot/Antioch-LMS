@@ -18,6 +18,7 @@ import { dataset, projectId } from "@/sanity/env";
 import { LessonNotes } from "@/components/LessonNotes";
 import { LessonDiscussion } from "@/components/LessonDiscussion";
 import { LessonQuiz } from "@/components/LessonQuiz";
+import { LessonBookmarkButton } from "@/components/LessonBookmarkButton";
 
 interface LessonPageProps {
   params: Promise<{
@@ -51,7 +52,10 @@ export default async function LessonPage({ params }: LessonPageProps) {
             durationMinutes={nav.durationMinutes}
           />
 
-          <h1 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">{lesson.title}</h1>
+          <div className="flex items-start justify-between gap-3 mb-3 sm:mb-4">
+            <h1 className="text-xl sm:text-2xl font-bold">{lesson.title}</h1>
+            <LessonBookmarkButton lessonId={lesson._id} courseId={courseId} />
+          </div>
 
           {lesson.description && (
             <p className="text-sm sm:text-base text-muted-foreground mb-6 sm:mb-8">{lesson.description}</p>
