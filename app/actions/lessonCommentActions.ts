@@ -5,6 +5,7 @@ import {
   createLessonComment,
   deleteLessonComment,
 } from "@/sanity/lib/lessons/lessonComments";
+import { notifyDiscussionReply } from "@/sanity/lib/notifications/notifications";
 
 export async function getLessonCommentsAction(lessonId: string) {
   try {
@@ -19,10 +20,22 @@ export async function getLessonCommentsAction(lessonId: string) {
 export async function createLessonCommentAction(
   lessonId: string,
   clerkId: string,
-  content: string
+  content: string,
+  meta?: { lessonTitle?: string; courseId?: string; commenterName?: string }
 ) {
   try {
     await createLessonComment(lessonId, clerkId, content);
+
+    if (meta?.lessonTitle && meta?.courseId && meta?.commenterName) {
+      notifyDiscussionReply({
+        lessonId,
+        lessonTitle: meta.lessonTitle,
+        courseId: meta.courseId,
+        commenterClerkId: clerkId,
+        commenterName: meta.commenterName,
+      }).catch(console.error);
+    }
+
     return { success: true };
   } catch (error) {
     console.error("Error creating lesson comment:", error);

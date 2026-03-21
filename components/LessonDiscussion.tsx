@@ -12,6 +12,8 @@ import type { LessonComment } from "@/sanity/lib/lessons/lessonComments";
 
 interface LessonDiscussionProps {
   lessonId: string;
+  lessonTitle?: string;
+  courseId?: string;
 }
 
 function timeAgo(dateString: string): string {
@@ -29,7 +31,7 @@ function timeAgo(dateString: string): string {
   return date.toLocaleDateString();
 }
 
-export function LessonDiscussion({ lessonId }: LessonDiscussionProps) {
+export function LessonDiscussion({ lessonId, lessonTitle, courseId }: LessonDiscussionProps) {
   const { user } = useUser();
   const [comments, setComments] = useState<LessonComment[]>([]);
   const [newComment, setNewComment] = useState("");
@@ -52,7 +54,12 @@ export function LessonDiscussion({ lessonId }: LessonDiscussionProps) {
     setNewComment("");
 
     startTransition(async () => {
-      const result = await createLessonCommentAction(lessonId, user.id, text);
+      const commenterName = [user.firstName, user.lastName].filter(Boolean).join(" ") || "Someone";
+      const result = await createLessonCommentAction(lessonId, user.id, text, {
+        lessonTitle,
+        courseId,
+        commenterName,
+      });
       if (result.success) {
         const refreshed = await getLessonCommentsAction(lessonId);
         if (refreshed.success) setComments(refreshed.data as LessonComment[]);

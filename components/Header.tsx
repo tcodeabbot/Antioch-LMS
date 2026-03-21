@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import DarkModeToggle from "./DarkModeToggle";
+import { NotificationBell } from "./NotificationBell";
 
 export default function Header() {
   return (
@@ -53,6 +54,7 @@ export default function Header() {
               >
                 <BookMarkedIcon className="h-4 w-4" />
               </Link>
+              <NotificationBell />
             </SignedIn>
 
             <div className="flex-shrink-0">

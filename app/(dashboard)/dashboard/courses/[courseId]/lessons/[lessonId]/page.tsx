@@ -120,7 +120,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
           <div className="mt-8 space-y-4">
             <LessonQuiz lessonId={lesson._id} />
             <LessonNotes lessonId={lesson._id} />
-            <LessonDiscussion lessonId={lesson._id} />
+            <LessonDiscussion lessonId={lesson._id} lessonTitle={lesson.title} courseId={courseId} />
           </div>
 
           <LessonBottomNav

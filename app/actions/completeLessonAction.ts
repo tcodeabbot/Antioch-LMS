@@ -1,6 +1,7 @@
 "use server";
 
 import { completeLessonById } from "@/sanity/lib/lessons/completeLessonById";
+import { checkAndNotifyMilestones } from "@/sanity/lib/notifications/milestoneCheck";
 
 export async function completeLessonAction(lessonId: string, clerkId: string) {
   try {
@@ -8,6 +9,8 @@ export async function completeLessonAction(lessonId: string, clerkId: string) {
       lessonId,
       clerkId,
     });
+
+    checkAndNotifyMilestones(clerkId).catch(console.error);
 
     return { success: true };
   } catch (error) {
