@@ -19,6 +19,7 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { Progress } from "@/components/ui/progress";
+import { ManualEnrollButton } from "@/components/admin/ManualEnrollButton";
 import { EngagementBadge } from "@/components/admin/StudentsTable";
 import type { EngagementLevel } from "@/sanity/lib/admin/getAllStudents";
 
@@ -257,11 +258,12 @@ export default async function StudentDetailPage({
 
       {/* Enrolled Courses */}
       <div className="bg-card border border-border rounded-lg overflow-hidden mb-8">
-        <div className="p-6 border-b border-border">
+        <div className="p-6 border-b border-border flex items-center justify-between">
           <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
             <BookOpen className="h-5 w-5" />
             Enrolled Courses
           </h2>
+          <ManualEnrollButton studentId={student._id} />
         </div>
         {courseProgress.length > 0 ? (
           <div className="divide-y divide-border">
