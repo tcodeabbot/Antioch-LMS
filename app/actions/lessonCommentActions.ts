@@ -3,6 +3,7 @@
 import {
   getLessonComments,
   createLessonComment,
+  editLessonComment,
   deleteLessonComment,
 } from "@/sanity/lib/lessons/lessonComments";
 import { notifyDiscussionReply } from "@/sanity/lib/notifications/notifications";
@@ -21,10 +22,20 @@ export async function createLessonCommentAction(
   lessonId: string,
   clerkId: string,
   content: string,
-  meta?: { lessonTitle?: string; courseId?: string; commenterName?: string }
+  meta?: {
+    lessonTitle?: string;
+    courseId?: string;
+    commenterName?: string;
+    parentCommentId?: string;
+  }
 ) {
   try {
-    await createLessonComment(lessonId, clerkId, content);
+    await createLessonComment(
+      lessonId,
+      clerkId,
+      content,
+      meta?.parentCommentId
+    );
 
     if (meta?.lessonTitle && meta?.courseId && meta?.commenterName) {
       notifyDiscussionReply({
@@ -40,6 +51,20 @@ export async function createLessonCommentAction(
   } catch (error) {
     console.error("Error creating lesson comment:", error);
     return { success: false, error: "Failed to post comment" };
+  }
+}
+
+export async function editLessonCommentAction(
+  commentId: string,
+  clerkId: string,
+  newContent: string
+) {
+  try {
+    await editLessonComment(commentId, clerkId, newContent);
+    return { success: true };
+  } catch (error) {
+    console.error("Error editing lesson comment:", error);
+    return { success: false, error: "Failed to edit comment" };
   }
 }
 
