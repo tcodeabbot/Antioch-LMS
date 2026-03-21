@@ -30,10 +30,8 @@ const nextConfig: NextConfig = {
       "@radix-ui/react-select",
       "@radix-ui/react-progress",
       "@portabletext/react",
-      "sanity",
     ],
   },
-  serverExternalPackages: ["sanity"],
 };
 
 export default nextConfig;

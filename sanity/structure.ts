@@ -15,13 +15,25 @@ export const structure = (S: StructureBuilder) =>
               S.list()
                 .title("Course Options")
                 .items([
-                  // Option to edit course content
                   S.listItem()
                     .title("Edit Course Content")
                     .child(
                       S.document().schemaType("course").documentId(courseId)
                     ),
-                  // Option to view course enrollments
+                  S.listItem()
+                    .title("Quizzes")
+                    .child(
+                      S.documentList()
+                        .title("Course Quizzes")
+                        .schemaType("quiz")
+                        .filter(
+                          '_type == "quiz" && lesson->._id in *[_type == "module" && _id in *[_type == "course" && _id == $courseId].modules[]._ref].lessons[]._ref'
+                        )
+                        .params({ courseId })
+                        .canHandleIntent(
+                          S.documentTypeList("quiz").getCanHandleIntent()
+                        )
+                    ),
                   S.listItem()
                     .title("View Students")
                     .child(
@@ -38,6 +50,14 @@ export const structure = (S: StructureBuilder) =>
 
       S.divider(),
 
+      // Quizzes — top-level access to all quizzes
+      S.listItem()
+        .title("Quizzes")
+        .schemaType("quiz")
+        .child(S.documentTypeList("quiz").title("All Quizzes")),
+
+      S.divider(),
+
       // Users
       S.listItem()
         .title("User Management")
@@ -45,7 +65,6 @@ export const structure = (S: StructureBuilder) =>
           S.list()
             .title("Select a Type of User")
             .items([
-              // Instructors with options
               S.listItem()
                 .title("Instructors")
                 .schemaType("instructor")
@@ -56,7 +75,6 @@ export const structure = (S: StructureBuilder) =>
                       S.list()
                         .title("Instructor Options")
                         .items([
-                          // Option to edit instructor details
                           S.listItem()
                             .title("Edit Instructor Details")
                             .child(
@@ -64,7 +82,6 @@ export const structure = (S: StructureBuilder) =>
                                 .schemaType("instructor")
                                 .documentId(instructorId)
                             ),
-                          // Option to view instructor's courses
                           S.listItem()
                             .title("View Courses")
                             .child(
@@ -78,7 +95,6 @@ export const structure = (S: StructureBuilder) =>
                         ])
                     )
                 ),
-              // Students with options
               S.listItem()
                 .title("Students")
                 .schemaType("student")
@@ -89,7 +105,6 @@ export const structure = (S: StructureBuilder) =>
                       S.list()
                         .title("Student Options")
                         .items([
-                          // Option to edit student details
                           S.listItem()
                             .title("Edit Student Details")
                             .child(
@@ -97,7 +112,6 @@ export const structure = (S: StructureBuilder) =>
                                 .schemaType("student")
                                 .documentId(studentId)
                             ),
-                          // Option to view enrollments
                           S.listItem()
                             .title("View Enrollments")
                             .child(
@@ -108,7 +122,6 @@ export const structure = (S: StructureBuilder) =>
                                 )
                                 .params({ studentId })
                             ),
-                          // Option to view completed lessons
                           S.listItem()
                             .title("View Completed Lessons")
                             .child(
