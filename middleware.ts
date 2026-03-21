@@ -2,6 +2,8 @@ import { clerkMiddleware, clerkClient, createRouteMatcher } from '@clerk/nextjs/
 import { NextResponse } from 'next/server';
 import { getStudentByClerkIdForMiddleware } from '@/sanity/lib/student/getStudentByClerkIdForMiddleware';
 
+const ONBOARDING_COOKIE = 'onboarding_done';
+
 const isPublicRoute = createRouteMatcher([
   '/',
   '/sign-in(.*)',
@@ -16,24 +18,24 @@ const isOnboardingRoute = createRouteMatcher(['/onboarding(.*)']);
 
 const isAdminRoute = createRouteMatcher(['/admin(.*)']);
 
+const isStudioRoute = createRouteMatcher(['/studio(.*)']);
+
 async function checkIsAdmin(userId: string, sessionClaims: CustomJwtSessionClaims | null): Promise<boolean> {
-  // Fast path: check JWT session claims (works when session token is configured)
   if (sessionClaims?.metadata?.role === 'admin') {
     return true;
   }
 
-  // Fallback: fetch user's publicMetadata directly from Clerk API
   const client = await clerkClient();
   const user = await client.users.getUser(userId);
   return user.publicMetadata?.role === 'admin';
 }
 
 export default clerkMiddleware(async (auth, req) => {
-  const { userId, sessionClaims } = await auth();
-
-  if (isPublicRoute(req)) {
+  if (isPublicRoute(req) || isStudioRoute(req)) {
     return NextResponse.next();
   }
+
+  const { userId, sessionClaims } = await auth();
 
   if (!userId) {
     const signInUrl = new URL('/sign-in', req.url);
@@ -59,6 +61,17 @@ export default clerkMiddleware(async (auth, req) => {
     }
   }
 
+  // Fast path: skip Sanity call if we already verified onboarding this session
+  const hasOnboardingCookie = req.cookies.get(ONBOARDING_COOKIE)?.value === '1';
+
+  if (hasOnboardingCookie) {
+    if (isOnboardingRoute(req)) {
+      return NextResponse.redirect(new URL('/dashboard', req.url));
+    }
+    return NextResponse.next();
+  }
+
+  // Slow path: first visit this session — check Sanity once, then set cookie
   const student = await getStudentByClerkIdForMiddleware(userId);
   const hasCompletedOnboarding = student?.onboardingCompleted === true;
 
@@ -69,11 +82,19 @@ export default clerkMiddleware(async (auth, req) => {
     return NextResponse.redirect(new URL('/onboarding', req.url));
   }
 
-  if (hasCompletedOnboarding && isOnboardingRoute(req)) {
-    return NextResponse.redirect(new URL('/dashboard', req.url));
-  }
+  // Onboarding done — set cookie so we never call Sanity again this session
+  const response = isOnboardingRoute(req)
+    ? NextResponse.redirect(new URL('/dashboard', req.url))
+    : NextResponse.next();
 
-  return NextResponse.next();
+  response.cookies.set(ONBOARDING_COOKIE, '1', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 24, // 24 hours
+  });
+
+  return response;
 });
 
 export const config = {

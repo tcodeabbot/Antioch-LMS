@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { ClerkProvider } from "@clerk/nextjs";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { SanityLive } from "@/sanity/lib/live";
@@ -15,13 +14,13 @@ export default function UserLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <>
       <div className="flex flex-col min-h-screen">
         <Header />
         <main className="flex-1 pt-14 sm:pt-16">{children}</main>
         <Footer />
       </div>
       <SanityLive />
-    </ClerkProvider>
+    </>
   );
 }
