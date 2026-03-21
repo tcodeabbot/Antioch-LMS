@@ -19,6 +19,7 @@ import { LessonNotes } from "@/components/LessonNotes";
 import { LessonDiscussion } from "@/components/LessonDiscussion";
 import { LessonQuiz } from "@/components/LessonQuiz";
 import { LessonBookmarkButton } from "@/components/LessonBookmarkButton";
+import { StudyTimeTracker } from "@/components/StudyTimeTracker";
 
 interface LessonPageProps {
   params: Promise<{
@@ -130,6 +131,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
         </div>
       </div>
 
+      <StudyTimeTracker lessonId={lesson._id} courseId={courseId} />
       <KeyboardShortcuts
         courseId={courseId}
         prevLessonId={nav.prevLesson?._id || null}

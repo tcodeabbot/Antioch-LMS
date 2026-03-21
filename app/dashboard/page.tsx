@@ -7,6 +7,7 @@ import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { GraduationCap, BookOpen, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { getStudentByClerkId } from "@/sanity/lib/student/getStudentByClerkId";
+import { StudyTimeWidget } from "@/components/StudyTimeWidget";
 
 export default async function DashboardPage() {
   const user = await currentUser();
@@ -119,6 +120,11 @@ export default async function DashboardPage() {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Study Time Widget */}
+          <div className="mb-8">
+            <StudyTimeWidget />
           </div>
 
           {/* Enrolled Courses Section */}
