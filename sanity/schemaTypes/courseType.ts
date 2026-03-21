@@ -19,6 +19,21 @@ export const courseType = defineType({
       validation: (Rule) => Rule.min(0),
     },
     defineField({
+      name: "publicationStatus",
+      title: "Status",
+      type: "string",
+      options: {
+        list: [
+          { title: "Draft", value: "draft" },
+          { title: "Published", value: "published" },
+          { title: "Archived", value: "archived" },
+        ],
+        layout: "radio",
+      },
+      initialValue: "published",
+      description: "Draft and archived courses are hidden from the public catalog.",
+    }),
+    defineField({
       name: "slug",
       title: "Slug",
       type: "slug",

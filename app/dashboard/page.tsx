@@ -8,6 +8,11 @@ import { getStudentByClerkId } from "@/sanity/lib/student/getStudentByClerkId";
 import { StudyTimeWidget } from "@/components/StudyTimeWidget";
 import { ContinueLearning } from "@/components/ContinueLearning";
 import { DashboardTabs } from "@/components/DashboardTabs";
+import { DashboardQuickActions } from "@/components/dashboard/DashboardQuickActions";
+
+type EnrolledCourseRow = {
+  course?: { _id: string; title?: string | null; [key: string]: unknown } | null;
+};
 
 export default async function DashboardPage() {
   const user = await currentUser();
@@ -21,10 +26,11 @@ export default async function DashboardPage() {
     redirect("/onboarding");
   }
 
-  const enrolledCourses = await getEnrolledCourses(user.id);
+  const enrolledCourses = (await getEnrolledCourses(user.id)) as EnrolledCourseRow[];
 
   const coursesWithProgress = await Promise.all(
-    enrolledCourses.map(async ({ course }: { course: any }) => {
+    enrolledCourses.map(async (row) => {
+      const { course } = row;
       if (!course) return null;
       const progress = await getCourseProgress(user.id, course._id);
       return {
@@ -35,11 +41,9 @@ export default async function DashboardPage() {
   );
 
   const validCourses = coursesWithProgress.filter(
-    (item: any) => item !== null
-  ) as Array<{
-    course: NonNullable<(typeof coursesWithProgress)[0]>["course"];
-    progress: number;
-  }>;
+    (item): item is { course: NonNullable<EnrolledCourseRow["course"]>; progress: number } =>
+      item !== null
+  );
 
   const totalProgress =
     validCourses.length > 0
@@ -52,18 +56,27 @@ export default async function DashboardPage() {
   const studentName =
     `${user.firstName || ""} ${user.lastName || ""}`.trim() || "Student";
 
+  const today = new Date().toLocaleDateString(undefined, {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
+
   return (
     <>
       {/* Header */}
       <div className="mb-8">
+        <p className="text-sm text-muted-foreground mb-1">{today}</p>
         <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">
           Dashboard
         </h1>
         <p className="text-muted-foreground">
-          Welcome back, {user.firstName || "Student"}! Continue your learning
-          journey.
+          Welcome back, {user.firstName || studentName}! Pick up where you left off or explore something
+          new.
         </p>
       </div>
+
+      <DashboardQuickActions />
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">

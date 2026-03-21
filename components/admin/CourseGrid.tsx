@@ -18,11 +18,23 @@ import {
   FileText,
   ChevronLeft,
   ChevronRight,
+  AlertTriangle,
 } from "lucide-react";
 import Link from "next/link";
 
+interface LessonHealth {
+  _id: string;
+  description?: string;
+  videoUrl?: string;
+  loomUrl?: string;
+  quizQuestionCount?: number;
+}
+
 interface Module {
   lessonCount?: number;
+  title?: string;
+  order?: number;
+  lessons?: LessonHealth[];
 }
 
 interface Course {
@@ -33,6 +45,8 @@ interface Course {
   isFree?: boolean;
   totalRevenue?: number;
   enrollmentCount?: number;
+  description?: string;
+  publicationStatus?: "draft" | "published" | "archived";
   category?: {
     title: string;
   };
@@ -40,6 +54,39 @@ interface Course {
     name: string;
   };
   modules?: Module[];
+}
+
+function getContentWarnings(course: Course): string[] {
+  const w: string[] = [];
+  const desc = (course.description || "").trim();
+  if (!desc || desc.length < 8) w.push("Short or missing course description");
+
+  const mods = course.modules || [];
+  if (mods.length === 0) w.push("No modules");
+
+  let lessonsNoVideo = 0;
+  let lessonsNoQuiz = 0;
+  let lessonsNoDesc = 0;
+
+  for (const m of mods) {
+    if ((m.lessonCount || 0) === 0) {
+      w.push(`Empty module: ${m.title || "Untitled"}`);
+    }
+    for (const l of m.lessons || []) {
+      const hasVideo = Boolean(l.videoUrl || l.loomUrl);
+      if (!hasVideo) lessonsNoVideo++;
+      const qc = l.quizQuestionCount ?? 0;
+      if (qc === 0) lessonsNoQuiz++;
+      const ld = (l.description || "").trim();
+      if (!ld) lessonsNoDesc++;
+    }
+  }
+
+  if (lessonsNoVideo > 0) w.push(`${lessonsNoVideo} lesson(s) without video`);
+  if (lessonsNoQuiz > 0) w.push(`${lessonsNoQuiz} lesson(s) without quiz`);
+  if (lessonsNoDesc > 0) w.push(`${lessonsNoDesc} lesson(s) without description`);
+
+  return w.slice(0, 8);
 }
 
 type SortOption = "title" | "enrollments" | "revenue" | "price" | "lessons";
@@ -160,11 +207,33 @@ export function CourseGrid({ courses }: { courses: Course[] }) {
                   0
                 ) || 0;
 
+              const warnings = getContentWarnings(course);
+              const status = course.publicationStatus || "published";
+
               return (
                 <div
                   key={course._id}
                   className="bg-card border border-border rounded-lg p-6 hover:shadow-lg transition-shadow"
                 >
+                  <div className="mb-3 flex flex-wrap items-center gap-2">
+                    <span
+                      className={`text-xs font-medium rounded-full px-2 py-0.5 ${
+                        status === "published"
+                          ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400"
+                          : status === "draft"
+                            ? "bg-amber-500/15 text-amber-800 dark:text-amber-300"
+                            : "bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      {status}
+                    </span>
+                    {warnings.length > 0 && (
+                      <span className="text-xs font-medium rounded-full px-2 py-0.5 bg-amber-500/15 text-amber-800 dark:text-amber-300 flex items-center gap-1">
+                        <AlertTriangle className="h-3 w-3" />
+                        {warnings.length} warning{warnings.length !== 1 ? "s" : ""}
+                      </span>
+                    )}
+                  </div>
                   <div className="mb-4">
                     <h3 className="text-xl font-semibold text-foreground mb-2">
                       {course.title}
@@ -222,6 +291,17 @@ export function CourseGrid({ courses }: { courses: Course[] }) {
                       </span>
                     </div>
                   </div>
+
+                  {warnings.length > 0 && (
+                    <ul className="mb-4 text-xs text-amber-800 dark:text-amber-200/90 space-y-1 border border-amber-500/30 rounded-md p-2 bg-amber-500/5">
+                      {warnings.map((msg, i) => (
+                        <li key={`${course._id}-w-${i}`} className="flex gap-1.5">
+                          <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-0.5 opacity-80" />
+                          <span>{msg}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
 
                   <div className="flex gap-2">
                     <Link

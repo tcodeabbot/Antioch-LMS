@@ -7,28 +7,27 @@ import {
   DollarSign,
   BookOpen,
   TrendingUp,
-  Calendar,
-  Mail,
+  AlertTriangle,
 } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
+import { CourseEnrollmentsTable } from "@/components/admin/CourseEnrollmentsTable";
+import { CourseFunnelChart } from "@/components/admin/CourseFunnelChart";
+
+type ModuleBlock = {
+  _id: string;
+  title: string;
+  order?: number;
+  lessons?: {
+    _id: string;
+    title: string;
+    order?: number;
+  }[];
+};
 
 interface CourseDetailsPageProps {
   params: Promise<{
     courseId: string;
   }>;
-}
-
-interface Enrollment {
-  _id: string;
-  enrolledAt?: string;
-  amount?: number;
-  student?: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    imageUrl?: string;
-  };
 }
 
 export default async function CourseDetailsPage({
@@ -47,9 +46,12 @@ export default async function CourseDetailsPage({
     redirect("/admin");
   }
 
+  const revenueDollars = (course.stats.totalRevenueCents || 0) / 100;
+  const status = course.publicationStatus || "published";
+  const modules = (course.modules || []) as ModuleBlock[];
+
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header */}
       <div className="mb-8">
         <Link
           href="/admin"
@@ -58,13 +60,39 @@ export default async function CourseDetailsPage({
           <ArrowLeft className="h-4 w-4" />
           Back to Admin Dashboard
         </Link>
-        <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">
-          {course.title}
-        </h1>
+        <div className="flex flex-wrap items-center gap-2 mb-2">
+          <h1 className="text-3xl sm:text-4xl font-bold text-foreground">
+            {course.title}
+          </h1>
+          <span
+            className={`text-xs font-medium rounded-full px-2.5 py-1 ${
+              status === "published"
+                ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400"
+                : status === "draft"
+                  ? "bg-amber-500/15 text-amber-800 dark:text-amber-300"
+                  : "bg-muted text-muted-foreground"
+            }`}
+          >
+            {status}
+          </span>
+        </div>
         <p className="text-muted-foreground">{course.description}</p>
       </div>
 
-      {/* Course Info */}
+      {course.contentWarnings && course.contentWarnings.length > 0 && (
+        <div className="mb-8 rounded-lg border border-amber-500/40 bg-amber-500/10 p-4">
+          <div className="flex items-center gap-2 font-medium text-amber-900 dark:text-amber-100 mb-2">
+            <AlertTriangle className="h-5 w-5" />
+            Content health
+          </div>
+          <ul className="list-disc pl-5 text-sm text-amber-900/90 dark:text-amber-100/90 space-y-1">
+            {course.contentWarnings.map((w: string, i: number) => (
+              <li key={`cw-${i}`}>{w}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       <div className="bg-card border border-border rounded-lg p-6 mb-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
@@ -88,15 +116,15 @@ export default async function CourseDetailsPage({
               Price
             </p>
             <p className="text-lg font-semibold text-foreground">
-              {course.isFree ? "Free" : `$${course.price?.toFixed(2)}`}
+              {(course as { isFree?: boolean }).isFree || course.price === 0
+                ? "Free"
+                : `$${typeof course.price === "number" ? course.price.toFixed(2) : "—"}`}
             </p>
           </div>
         </div>
       </div>
 
-      {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {/* Total Enrollments */}
         <div className="bg-card border border-border rounded-lg p-6">
           <div className="flex items-center gap-4">
             <div className="h-12 w-12 rounded-full bg-blue-500/10 flex items-center justify-center">
@@ -113,7 +141,6 @@ export default async function CourseDetailsPage({
           </div>
         </div>
 
-        {/* Total Revenue */}
         <div className="bg-card border border-border rounded-lg p-6">
           <div className="flex items-center gap-4">
             <div className="h-12 w-12 rounded-full bg-green-500/10 flex items-center justify-center">
@@ -124,13 +151,16 @@ export default async function CourseDetailsPage({
                 Total Revenue
               </p>
               <p className="text-2xl font-bold text-foreground">
-                ${course.stats.totalRevenue.toFixed(2)}
+                $
+                {revenueDollars.toLocaleString("en-US", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </p>
             </div>
           </div>
         </div>
 
-        {/* Completion Rate */}
         <div className="bg-card border border-border rounded-lg p-6">
           <div className="flex items-center gap-4">
             <div className="h-12 w-12 rounded-full bg-purple-500/10 flex items-center justify-center">
@@ -147,7 +177,6 @@ export default async function CourseDetailsPage({
           </div>
         </div>
 
-        {/* Total Lessons */}
         <div className="bg-card border border-border rounded-lg p-6">
           <div className="flex items-center gap-4">
             <div className="h-12 w-12 rounded-full bg-orange-500/10 flex items-center justify-center">
@@ -165,15 +194,130 @@ export default async function CourseDetailsPage({
         </div>
       </div>
 
-      {/* Course Structure */}
+      <div className="bg-card border border-border rounded-lg p-6 mb-8">
+        <h2 className="text-xl font-semibold text-foreground mb-2">
+          Completion funnel
+        </h2>
+        <p className="text-sm text-muted-foreground mb-4">
+          Distinct enrolled students who completed each lesson (course order). Compare bar lengths to
+          see where engagement drops.
+        </p>
+        <CourseFunnelChart data={course.funnel} />
+      </div>
+
+      <div className="bg-card border border-border rounded-lg p-6 mb-8 overflow-x-auto">
+        <h2 className="text-xl font-semibold text-foreground mb-4">
+          Student progress
+        </h2>
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-border text-left">
+              <th className="pb-2 pr-4 font-medium">Student</th>
+              <th className="pb-2 pr-4 font-medium">Lessons done</th>
+              <th className="pb-2 pr-4 font-medium">Progress</th>
+              <th className="pb-2 font-medium">Last activity</th>
+            </tr>
+          </thead>
+          <tbody>
+            {course.studentProgress.length === 0 ? (
+              <tr>
+                <td colSpan={4} className="py-6 text-muted-foreground">
+                  No enrollments yet.
+                </td>
+              </tr>
+            ) : (
+              course.studentProgress.map(
+                (row: {
+                  student: {
+                    _id: string;
+                    firstName?: string;
+                    lastName?: string;
+                    email?: string;
+                  };
+                  completedLessons: number;
+                  totalLessons: number;
+                  progressPercent: number;
+                  lastActivity: string | null;
+                }) => (
+                  <tr key={row.student._id} className="border-b border-border/60">
+                    <td className="py-2 pr-4">
+                      <Link
+                        href={`/admin/students/${row.student._id}`}
+                        className="text-primary hover:underline font-medium"
+                      >
+                        {row.student.firstName} {row.student.lastName}
+                      </Link>
+                      <div className="text-xs text-muted-foreground">{row.student.email}</div>
+                    </td>
+                    <td className="py-2 pr-4">
+                      {row.completedLessons} / {row.totalLessons}
+                    </td>
+                    <td className="py-2 pr-4">{row.progressPercent}%</td>
+                    <td className="py-2 text-muted-foreground">
+                      {row.lastActivity
+                        ? new Date(row.lastActivity).toLocaleString()
+                        : "—"}
+                    </td>
+                  </tr>
+                )
+              )
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="bg-card border border-border rounded-lg p-6 mb-8 overflow-x-auto">
+        <h2 className="text-xl font-semibold text-foreground mb-4">
+          Quiz performance (all time, this course)
+        </h2>
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-border text-left">
+              <th className="pb-2 pr-4 font-medium">Lesson</th>
+              <th className="pb-2 pr-4 font-medium">Attempts</th>
+              <th className="pb-2 pr-4 font-medium">Avg score</th>
+              <th className="pb-2 font-medium">Pass rate</th>
+            </tr>
+          </thead>
+          <tbody>
+            {course.quizByLesson.every((q: { attempts: number }) => q.attempts === 0) ? (
+              <tr>
+                <td colSpan={4} className="py-6 text-muted-foreground">
+                  No quiz attempts recorded for lessons in this course.
+                </td>
+              </tr>
+            ) : (
+              course.quizByLesson.map(
+                (q: {
+                  lessonId: string;
+                  title: string;
+                  avgScore: number | null;
+                  passRate: number | null;
+                  attempts: number;
+                }) => (
+                  <tr key={q.lessonId} className="border-b border-border/60">
+                    <td className="py-2 pr-4">{q.title}</td>
+                    <td className="py-2 pr-4">{q.attempts}</td>
+                    <td className="py-2 pr-4">
+                      {q.avgScore != null ? `${q.avgScore}%` : "—"}
+                    </td>
+                    <td className="py-2">{q.passRate != null ? `${q.passRate}%` : "—"}</td>
+                  </tr>
+                )
+              )
+            )}
+          </tbody>
+        </table>
+      </div>
+
       <div className="bg-card border border-border rounded-lg p-6 mb-8">
         <h2 className="text-xl font-semibold text-foreground mb-4">
           Course Structure
         </h2>
         <div className="space-y-4">
-          {course.modules && course.modules.length > 0 ? (
-            course.modules
-              .sort((a, b) => (a.order || 0) - (b.order || 0))
+          {modules.length > 0 ? (
+            [...modules]
+              .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
               .map((module, index) => (
                 <div
                   key={module._id}
@@ -188,8 +332,8 @@ export default async function CourseDetailsPage({
                   </p>
                   {module.lessons && module.lessons.length > 0 && (
                     <ul className="mt-3 space-y-1 ml-4">
-                      {module.lessons
-                        .sort((a, b) => (a.order || 0) - (b.order || 0))
+                      {[...module.lessons]
+                        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
                         .map((lesson, lessonIndex) => (
                           <li
                             key={lesson._id}
@@ -210,97 +354,11 @@ export default async function CourseDetailsPage({
         </div>
       </div>
 
-      {/* Enrolled Students */}
-      <div className="bg-card border border-border rounded-lg overflow-hidden">
-        <div className="p-6 border-b border-border">
-          <h2 className="text-xl font-semibold text-foreground">
-            Enrolled Students
-          </h2>
-        </div>
-
-        {course.enrollments && course.enrollments.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-muted/50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Student
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Email
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Amount Paid
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Enrolled Date
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {course.enrollments.map((enrollment: Enrollment) => (
-                  <tr
-                    key={enrollment._id}
-                    className="hover:bg-muted/50 transition-colors"
-                  >
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-3">
-                        {enrollment.student?.imageUrl ? (
-                          <Image
-                            src={enrollment.student.imageUrl}
-                            alt={`${enrollment.student.firstName} ${enrollment.student.lastName}`}
-                            width={40}
-                            height={40}
-                            className="rounded-full"
-                          />
-                        ) : (
-                          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                            <Users className="h-5 w-5 text-primary" />
-                          </div>
-                        )}
-                        <div>
-                          <p className="text-sm font-medium text-foreground">
-                            {enrollment.student?.firstName}{" "}
-                            {enrollment.student?.lastName}
-                          </p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Mail className="h-4 w-4" />
-                        {enrollment.student?.email}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm font-medium text-foreground">
-                        ${(enrollment.amount || 0).toFixed(2)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Calendar className="h-4 w-4" />
-                        {enrollment.enrolledAt
-                          ? new Date(enrollment.enrolledAt).toLocaleDateString()
-                          : "N/A"}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="p-12 text-center">
-            <Users className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-foreground mb-2">
-              No enrollments yet
-            </h3>
-            <p className="text-muted-foreground">
-              This course doesn&apos;t have any enrolled students yet.
-            </p>
-          </div>
-        )}
+      <div>
+        <h2 className="text-xl font-semibold text-foreground mb-4">
+          Enrolled Students
+        </h2>
+        <CourseEnrollmentsTable enrollments={course.enrollments || []} />
       </div>
     </div>
   );

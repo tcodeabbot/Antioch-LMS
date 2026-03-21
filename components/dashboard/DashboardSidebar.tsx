@@ -10,7 +10,9 @@ import {
   X,
   Home,
   BarChart3,
+  Shield,
 } from "lucide-react";
+import { useUser } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -45,6 +47,8 @@ const navigation = [
 export function DashboardSidebar() {
   const pathname = usePathname();
   const { isOpen, toggle, close } = useSidebar();
+  const { user } = useUser();
+  const isAdmin = user?.publicMetadata?.role === "admin";
 
   return (
     <>
@@ -128,6 +132,21 @@ export function DashboardSidebar() {
                   </Link>
                 );
               })}
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  onClick={close}
+                  className={cn(
+                    "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors border border-border",
+                    pathname.startsWith("/admin")
+                      ? "bg-amber-500/15 text-foreground border-amber-500/30"
+                      : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                  )}
+                >
+                  <Shield className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                  Admin
+                </Link>
+              )}
             </nav>
           </ScrollArea>
 

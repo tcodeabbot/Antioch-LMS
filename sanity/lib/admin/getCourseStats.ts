@@ -9,13 +9,24 @@ export async function getCourseStats() {
       "slug": slug.current,
       price,
       isFree,
+      publicationStatus,
+      description,
       _createdAt,
       "category": category->{title},
       "instructor": instructor->{name},
       "enrollmentCount": count(*[_type == "enrollment" && course._ref == ^._id]),
       "totalRevenue": math::sum(*[_type == "enrollment" && course._ref == ^._id].amount),
       "modules": modules[]-> {
-        "lessonCount": count(lessons[]->)
+        order,
+        title,
+        "lessonCount": count(lessons[]->),
+        "lessons": lessons[]-> {
+          _id,
+          description,
+          videoUrl,
+          loomUrl,
+          "quizQuestionCount": count(quizQuestions)
+        }
       }
     },
     "totalCourses": count(*[_type == "course"]),
