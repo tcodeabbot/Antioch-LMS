@@ -25,7 +25,7 @@ export async function getStudentDetails(studentId: string) {
         title,
         "slug": slug.current,
         "category": category->{title, name},
-        "totalLessons": count(modules[]->lessons[]->,),
+        "totalLessons": count(modules[]->lessons[]->),
         "modules": modules[]-> {
           _id,
           title,
@@ -65,7 +65,7 @@ export async function getStudentDetails(studentId: string) {
       content,
       createdAt,
       "lessonTitle": lesson->title,
-      "courseTitle": lesson->^.^.title
+      "lessonId": lesson._ref
     },
     "bookmarks": *[_type == "lessonBookmark" && student._ref == $studentId] | order(createdAt desc) {
       _id,
