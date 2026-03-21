@@ -27,7 +27,7 @@ const navigation = [
   },
   {
     name: "My Courses",
-    href: "/my-courses",
+    href: "/dashboard/my-courses",
     icon: BookOpen,
   },
   {
@@ -107,7 +107,10 @@ export function DashboardSidebar() {
           <ScrollArea className="flex-1">
             <nav className="p-4 space-y-1">
               {navigation.map((item) => {
-                const isActive = pathname === item.href;
+                const isActive =
+                  item.href === "/dashboard"
+                    ? pathname === "/dashboard"
+                    : pathname.startsWith(item.href);
                 return (
                   <Link
                     key={item.name}

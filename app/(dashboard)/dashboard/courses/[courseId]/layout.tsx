@@ -34,7 +34,7 @@ export default async function CourseLayout({
   ]);
 
   if (!course) {
-    return redirect("/my-courses");
+    return redirect("/dashboard/my-courses");
   }
 
   return (

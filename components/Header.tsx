@@ -48,7 +48,7 @@ export default function Header() {
 
               <Link
                 prefetch={false}
-                href="/my-courses"
+                href="/dashboard/my-courses"
                 className="sm:hidden flex items-center justify-center h-9 w-9 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 aria-label="My Courses"
               >

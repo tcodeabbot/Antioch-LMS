@@ -4,7 +4,7 @@ import Link from "next/link";
 const menuLinks = [
   { label: "Home", href: "/" },
   { label: "About", href: "https://www.antioch-of-africa.com/", external: true },
-  { label: "Courses", href: "/my-courses", external: false },
+  { label: "Courses", href: "/dashboard/my-courses", external: false },
   { label: "Contact", href: "https://www.antioch-of-africa.com/", external: true },
 ];
 
