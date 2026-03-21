@@ -108,8 +108,8 @@ export function DashboardSidebar() {
             <nav className="p-4 space-y-1">
               {navigation.map((item) => {
                 const isActive =
-                  item.href === "/dashboard"
-                    ? pathname === "/dashboard"
+                  item.href === "/" || item.href === "/dashboard"
+                    ? pathname === item.href
                     : pathname.startsWith(item.href);
                 return (
                   <Link
