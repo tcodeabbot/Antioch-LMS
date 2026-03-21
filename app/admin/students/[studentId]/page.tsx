@@ -19,6 +19,37 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { Progress } from "@/components/ui/progress";
+import { EngagementBadge } from "@/components/admin/StudentsTable";
+import type { EngagementLevel } from "@/sanity/lib/admin/getAllStudents";
+
+function calculateEngagement(stats: {
+  totalStudySeconds: number;
+  completionCount: number;
+  commentCount: number;
+  enrollmentCount: number;
+  lastActivityDate: string | null;
+}): EngagementLevel {
+  if (stats.enrollmentCount === 0) return "inactive";
+  const daysSinceLastActivity = stats.lastActivityDate
+    ? Math.floor(
+        (Date.now() - new Date(stats.lastActivityDate).getTime()) /
+          (1000 * 60 * 60 * 24)
+      )
+    : 999;
+  if (daysSinceLastActivity > 30) return "inactive";
+  const studyScore = Math.min(stats.totalStudySeconds / 3600, 10) / 10;
+  const completionScore = Math.min(stats.completionCount / 20, 1);
+  const discussionScore = Math.min(stats.commentCount / 10, 1);
+  const recencyScore = Math.max(0, 1 - daysSinceLastActivity / 30);
+  const score =
+    studyScore * 0.3 +
+    completionScore * 0.3 +
+    discussionScore * 0.2 +
+    recencyScore * 0.2;
+  if (score >= 0.5) return "high";
+  if (score >= 0.2) return "medium";
+  return "low";
+}
 
 interface StudentDetailPageProps {
   params: Promise<{ studentId: string }>;
@@ -48,7 +79,15 @@ export default async function StudentDetailPage({
     redirect("/admin/students");
   }
 
-  const { student, enrollments, lessonCompletions, studySessions, totalStudySeconds, quizAttempts, commentCount, recentComments, bookmarks } = data;
+  const { student, enrollments, lessonCompletions, studySessions, totalStudySeconds, quizAttempts, commentCount, recentComments, bookmarks, completionCount, lastActivityDate } = data;
+
+  const engagement = calculateEngagement({
+    totalStudySeconds: totalStudySeconds || 0,
+    completionCount: completionCount || 0,
+    commentCount: commentCount || 0,
+    enrollmentCount: enrollments?.length || 0,
+    lastActivityDate: lastActivityDate || null,
+  });
 
   // Calculate course progress
   const courseProgress = (enrollments || []).map((enrollment: any) => {
@@ -110,9 +149,12 @@ export default async function StudentDetailPage({
             </div>
           )}
           <div className="flex-1 min-w-0">
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-1">
-              {student.firstName} {student.lastName}
-            </h1>
+            <div className="flex items-center gap-3 mb-1">
+              <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
+                {student.firstName} {student.lastName}
+              </h1>
+              <EngagementBadge level={engagement} />
+            </div>
             <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground mt-2">
               <span className="flex items-center gap-1.5">
                 <Mail className="h-4 w-4" />

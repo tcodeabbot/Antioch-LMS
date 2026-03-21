@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { AdminDataTable, type Column } from "./AdminDataTable";
 import { Users, Mail, GraduationCap, Calendar } from "lucide-react";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
+import type { EngagementLevel } from "@/sanity/lib/admin/getAllStudents";
 
 interface Student {
   _id: string;
@@ -21,6 +23,43 @@ interface Student {
   };
   enrollmentCount?: number;
   _createdAt?: string;
+  engagement?: EngagementLevel;
+}
+
+const engagementConfig: Record<
+  EngagementLevel,
+  { label: string; className: string }
+> = {
+  high: {
+    label: "High",
+    className: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400",
+  },
+  medium: {
+    label: "Medium",
+    className: "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400",
+  },
+  low: {
+    label: "Low",
+    className: "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400",
+  },
+  inactive: {
+    label: "Inactive",
+    className: "bg-gray-100 text-gray-500 dark:bg-gray-800/40 dark:text-gray-400",
+  },
+};
+
+export function EngagementBadge({ level }: { level: EngagementLevel }) {
+  const config = engagementConfig[level];
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium",
+        config.className
+      )}
+    >
+      {config.label}
+    </span>
+  );
 }
 
 export function StudentsTable({ students }: { students: Student[] }) {
@@ -65,46 +104,19 @@ export function StudentsTable({ students }: { students: Student[] }) {
       ),
     },
     {
-      key: "phone",
-      label: "Phone",
-      sortable: false,
-      hiddenOnMobile: true,
-      render: (row) => (
-        <span className="text-sm text-foreground">
-          {row.phone || "Not provided"}
-        </span>
-      ),
-    },
-    {
-      key: "address",
-      label: "Location",
-      sortable: false,
-      hiddenOnMobile: true,
+      key: "engagement",
+      label: "Engagement",
+      sortable: true,
       getValue: (row) => {
-        const a = row.address;
-        if (!a) return "";
-        return [a.city, a.state, a.country].filter(Boolean).join(", ");
+        const order: Record<string, number> = { high: 0, medium: 1, low: 2, inactive: 3 };
+        return order[row.engagement || "inactive"];
       },
-      render: (row) => {
-        if (!row.address) {
-          return (
-            <span className="text-sm text-muted-foreground">Not provided</span>
-          );
-        }
-        const { city, state, country } = row.address;
-        return (
-          <div className="text-sm text-foreground">
-            <div>
-              {city}
-              {city && state ? ", " : ""}
-              {state}
-            </div>
-            {country && (
-              <div className="text-muted-foreground">{country}</div>
-            )}
-          </div>
-        );
-      },
+      render: (row) =>
+        row.engagement ? (
+          <EngagementBadge level={row.engagement} />
+        ) : (
+          <span className="text-sm text-muted-foreground">—</span>
+        ),
     },
     {
       key: "enrollmentCount",
@@ -117,6 +129,18 @@ export function StudentsTable({ students }: { students: Student[] }) {
             {row.enrollmentCount || 0}
           </span>
         </div>
+      ),
+    },
+    {
+      key: "phone",
+      label: "Phone",
+      sortable: false,
+      hiddenOnMobile: true,
+      mobileLabel: false,
+      render: (row) => (
+        <span className="text-sm text-foreground">
+          {row.phone || "Not provided"}
+        </span>
       ),
     },
     {
@@ -142,9 +166,7 @@ export function StudentsTable({ students }: { students: Student[] }) {
       searchableFields={["firstName", "lastName", "email"]}
       searchPlaceholder="Search students by name or email..."
       onRowClick={(row) => router.push(`/admin/students/${row._id}`)}
-      emptyIcon={
-        <Users className="h-16 w-16 text-muted-foreground" />
-      }
+      emptyIcon={<Users className="h-16 w-16 text-muted-foreground" />}
       emptyTitle="No students yet"
       emptyDescription="Students will appear here once they enroll in courses."
     />

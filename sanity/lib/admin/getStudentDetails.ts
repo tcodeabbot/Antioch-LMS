@@ -54,6 +54,11 @@ export async function getStudentDetails(studentId: string) {
       completedAt,
       "lessonTitle": lesson->title
     },
+    "completionCount": count(*[_type == "lessonCompletion" && student._ref == $studentId]),
+    "lastActivityDate": *[
+      _type in ["lessonCompletion", "studySession", "lessonComment", "quizAttempt"]
+      && student._ref == $studentId
+    ] | order(_createdAt desc) [0]._createdAt,
     "commentCount": count(*[_type == "lessonComment" && student._ref == $studentId]),
     "recentComments": *[_type == "lessonComment" && student._ref == $studentId] | order(createdAt desc) [0...10] {
       _id,
