@@ -1,11 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AdminDataTable, type Column } from "./AdminDataTable";
 import { Users, Mail, GraduationCap, Calendar } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import type { EngagementLevel } from "@/sanity/lib/admin/getAllStudents";
+import { BulkStudentActions } from "./BulkStudentActions";
 
 interface Student {
   _id: string;
@@ -64,6 +66,7 @@ export function EngagementBadge({ level }: { level: EngagementLevel }) {
 
 export function StudentsTable({ students }: { students: Student[] }) {
   const router = useRouter();
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const columns: Column<Student>[] = [
     {
@@ -169,6 +172,12 @@ export function StudentsTable({ students }: { students: Student[] }) {
       emptyIcon={<Users className="h-16 w-16 text-muted-foreground" />}
       emptyTitle="No students yet"
       emptyDescription="Students will appear here once they enroll in courses."
+      selectable
+      selectedIds={selectedIds}
+      onSelectionChange={setSelectedIds}
+      bulkActions={
+        <BulkStudentActions students={students} selectedIds={selectedIds} />
+      }
     />
   );
 }
