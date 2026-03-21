@@ -91,7 +91,7 @@ export function DashboardSidebar() {
               />
             </Link>
             <div className="flex items-center gap-1">
-              <NotificationBell />
+              <NotificationBell align="left" />
               <Button
                 variant="ghost"
                 size="icon"

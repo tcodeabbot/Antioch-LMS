@@ -62,7 +62,11 @@ function timeAgo(iso: string): string {
   return new Date(iso).toLocaleDateString();
 }
 
-export function NotificationBell() {
+interface NotificationBellProps {
+  align?: "left" | "right";
+}
+
+export function NotificationBell({ align = "right" }: NotificationBellProps) {
   const { user } = useUser();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -140,7 +144,10 @@ export function NotificationBell() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 max-h-[28rem] bg-card border border-border rounded-lg shadow-xl z-50 flex flex-col overflow-hidden">
+        <div className={cn(
+          "absolute top-full mt-2 w-80 sm:w-96 max-h-[28rem] bg-card border border-border rounded-lg shadow-xl z-50 flex flex-col overflow-hidden",
+          align === "left" ? "left-0" : "right-0"
+        )}>
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-border">
             <h3 className="font-semibold text-sm">Notifications</h3>

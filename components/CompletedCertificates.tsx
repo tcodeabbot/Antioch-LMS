@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Award, Download, Loader2 } from "lucide-react";
+import { Award, Download, Loader2, ExternalLink } from "lucide-react";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 interface CompletedCourse {
   courseId: string;
@@ -22,26 +23,20 @@ export function CompletedCertificates({
   if (completed.length === 0) return null;
 
   return (
-    <div className="mb-8">
-      <div className="flex items-center gap-2 mb-4">
-        <Award className="h-5 w-5 text-amber-600" />
-        <h2 className="text-lg font-semibold">Your Certificates</h2>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {completed.map((course) => (
-          <CertificateCard
-            key={course.courseId}
-            courseId={course.courseId}
-            courseTitle={course.courseTitle}
-            studentName={studentName}
-          />
-        ))}
-      </div>
+    <div className="space-y-3">
+      {completed.map((course) => (
+        <CertificateRow
+          key={course.courseId}
+          courseId={course.courseId}
+          courseTitle={course.courseTitle}
+          studentName={studentName}
+        />
+      ))}
     </div>
   );
 }
 
-function CertificateCard({
+function CertificateRow({
   courseId,
   courseTitle,
   studentName,
@@ -166,39 +161,39 @@ function CertificateCard({
   }
 
   return (
-    <div className="rounded-lg border border-amber-200 dark:border-amber-800 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20 p-4">
-      <div className="flex items-start gap-3">
-        <div className="h-10 w-10 rounded-full bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center flex-shrink-0">
-          <Award className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <h3 className="font-medium text-sm line-clamp-2 mb-1">
-            {courseTitle}
-          </h3>
-          <p className="text-xs text-muted-foreground mb-3">
-            Course completed
-          </p>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleDownload}
-              disabled={isGenerating}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-amber-600 text-white hover:bg-amber-700 text-xs font-medium disabled:opacity-50 transition-colors"
-            >
-              {isGenerating ? (
-                <Loader2 className="h-3 w-3 animate-spin" />
-              ) : (
-                <Download className="h-3 w-3" />
-              )}
-              {isGenerating ? "Generating..." : "Download PDF"}
-            </button>
-            <Link
-              href={`/dashboard/courses/${courseId}`}
-              className="text-xs text-primary hover:underline"
-            >
-              View Course
-            </Link>
-          </div>
-        </div>
+    <div className="flex items-center gap-4 rounded-lg border border-border bg-card p-4 transition-colors hover:bg-muted/30">
+      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+        <Award className="h-5 w-5 text-primary" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <h3 className="font-medium text-sm truncate">{courseTitle}</h3>
+        <p className="text-xs text-muted-foreground">Completed</p>
+      </div>
+      <div className="flex items-center gap-2 flex-shrink-0">
+        <button
+          onClick={handleDownload}
+          disabled={isGenerating}
+          className={cn(
+            "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors",
+            "bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+          )}
+        >
+          {isGenerating ? (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          ) : (
+            <Download className="h-3.5 w-3.5" />
+          )}
+          <span className="hidden sm:inline">
+            {isGenerating ? "Generating..." : "Certificate"}
+          </span>
+        </button>
+        <Link
+          href={`/dashboard/courses/${courseId}`}
+          className="inline-flex items-center justify-center h-8 w-8 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          title="View course"
+        >
+          <ExternalLink className="h-3.5 w-3.5" />
+        </Link>
       </div>
     </div>
   );

@@ -2,14 +2,13 @@ import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { getEnrolledCourses } from "@/sanity/lib/student/getEnrolledCourses";
 import { getCourseProgress } from "@/sanity/lib/lessons/getCourseProgress";
-import { CourseCard } from "@/components/CourseCard";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { GraduationCap, BookOpen, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { getStudentByClerkId } from "@/sanity/lib/student/getStudentByClerkId";
 import { StudyTimeWidget } from "@/components/StudyTimeWidget";
 import { ContinueLearning } from "@/components/ContinueLearning";
-import { CompletedCertificates } from "@/components/CompletedCertificates";
+import { DashboardTabs } from "@/components/DashboardTabs";
 
 export default async function DashboardPage() {
   const user = await currentUser();
@@ -18,7 +17,6 @@ export default async function DashboardPage() {
     redirect("/sign-in");
   }
 
-  // Check onboarding status
   const student = await getStudentByClerkId(user.id);
   if (!student?.onboardingCompleted) {
     redirect("/onboarding");
@@ -26,20 +24,19 @@ export default async function DashboardPage() {
 
   const enrolledCourses = await getEnrolledCourses(user.id);
 
-  // Get progress for each enrolled course
   const coursesWithProgress = await Promise.all(
-    enrolledCourses.map(async ({ course }) => {
+    enrolledCourses.map(async ({ course }: { course: any }) => {
       if (!course) return null;
       const progress = await getCourseProgress(user.id, course._id);
       return {
         course,
-        progress: progress.courseProgress
+        progress: progress.courseProgress,
       };
     })
   );
 
   const validCourses = coursesWithProgress.filter(
-    (item) => item !== null
+    (item: any) => item !== null
   ) as Array<{
     course: NonNullable<(typeof coursesWithProgress)[0]>["course"];
     progress: number;
@@ -53,11 +50,13 @@ export default async function DashboardPage() {
         )
       : 0;
 
+  const studentName =
+    `${user.firstName || ""} ${user.lastName || ""}`.trim() || "Student";
+
   return (
     <div className="flex h-screen overflow-hidden">
       <DashboardSidebar />
 
-      {/* Main Content */}
       <main className="flex-1 overflow-y-auto lg:ml-64">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Header */}
@@ -66,13 +65,14 @@ export default async function DashboardPage() {
               Dashboard
             </h1>
             <p className="text-muted-foreground">
-              Welcome back! Continue your learning journey.
+              Welcome back, {user.firstName || "Student"}! Continue your
+              learning journey.
             </p>
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-card border border-border rounded-lg p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div className="bg-card border border-border rounded-lg p-5">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground mb-1">
@@ -82,13 +82,13 @@ export default async function DashboardPage() {
                     {validCourses.length}
                   </p>
                 </div>
-                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                  <BookOpen className="h-6 w-6 text-primary" />
+                <div className="h-11 w-11 rounded-full bg-primary/10 flex items-center justify-center">
+                  <BookOpen className="h-5 w-5 text-primary" />
                 </div>
               </div>
             </div>
 
-            <div className="bg-card border border-border rounded-lg p-6">
+            <div className="bg-card border border-border rounded-lg p-5">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground mb-1">
@@ -98,78 +98,42 @@ export default async function DashboardPage() {
                     {totalProgress}%
                   </p>
                 </div>
-                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                  <TrendingUp className="h-6 w-6 text-primary" />
+                <div className="h-11 w-11 rounded-full bg-primary/10 flex items-center justify-center">
+                  <TrendingUp className="h-5 w-5 text-primary" />
                 </div>
               </div>
             </div>
 
-            <div className="bg-card border border-border rounded-lg p-6">
+            <div className="bg-card border border-border rounded-lg p-5">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground mb-1">
                     Completed Courses
                   </p>
                   <p className="text-3xl font-bold text-foreground">
-                    {
-                      validCourses.filter((item) => item.progress === 100)
-                        .length
-                    }
+                    {validCourses.filter((item) => item.progress === 100).length}
                   </p>
                 </div>
-                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                  <GraduationCap className="h-6 w-6 text-primary" />
+                <div className="h-11 w-11 rounded-full bg-primary/10 flex items-center justify-center">
+                  <GraduationCap className="h-5 w-5 text-primary" />
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Study Time Widget */}
+          {/* Study Time */}
           <div className="mb-8">
             <StudyTimeWidget />
           </div>
-
-          {/* Certificates */}
-          <CompletedCertificates
-            courses={validCourses.map((item) => ({
-              courseId: item.course._id,
-              courseTitle: item.course.title || "Course",
-              progress: item.progress,
-            }))}
-            studentName={`${user.firstName || ""} ${user.lastName || ""}`.trim() || "Student"}
-          />
 
           {/* Continue Learning + Recommendations */}
           <div className="mb-8">
             <ContinueLearning />
           </div>
 
-          {/* Enrolled Courses Section */}
+          {/* Tabbed: Courses / Certificates */}
           {validCourses.length > 0 ? (
-            <div>
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-foreground">
-                  My Enrolled Courses
-                </h2>
-                <Link
-                  href="/my-courses"
-                  className="text-sm font-medium text-primary hover:underline"
-                >
-                  View All
-                </Link>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {validCourses.map((item) => (
-                  <CourseCard
-                    key={item.course._id}
-                    course={item.course}
-                    progress={item.progress}
-                    href={`/dashboard/courses/${item.course._id}`}
-                  />
-                ))}
-              </div>
-            </div>
+            <DashboardTabs courses={validCourses} studentName={studentName} />
           ) : (
             <div className="bg-card border border-border rounded-lg p-12 text-center">
               <GraduationCap className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
