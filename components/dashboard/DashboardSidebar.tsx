@@ -9,6 +9,7 @@ import {
   Menu,
   X,
   Home,
+  BarChart3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -27,6 +28,11 @@ const navigation = [
     name: "My Courses",
     href: "/my-courses",
     icon: BookOpen,
+  },
+  {
+    name: "Analytics",
+    href: "/dashboard/analytics",
+    icon: BarChart3,
   },
   {
     name: "Browse Courses",
