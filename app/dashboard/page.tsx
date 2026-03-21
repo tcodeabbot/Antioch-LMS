@@ -9,6 +9,7 @@ import Link from "next/link";
 import { getStudentByClerkId } from "@/sanity/lib/student/getStudentByClerkId";
 import { StudyTimeWidget } from "@/components/StudyTimeWidget";
 import { ContinueLearning } from "@/components/ContinueLearning";
+import { CompletedCertificates } from "@/components/CompletedCertificates";
 
 export default async function DashboardPage() {
   const user = await currentUser();
@@ -127,6 +128,16 @@ export default async function DashboardPage() {
           <div className="mb-8">
             <StudyTimeWidget />
           </div>
+
+          {/* Certificates */}
+          <CompletedCertificates
+            courses={validCourses.map((item) => ({
+              courseId: item.course._id,
+              courseTitle: item.course.title || "Course",
+              progress: item.progress,
+            }))}
+            studentName={`${user.firstName || ""} ${user.lastName || ""}`.trim() || "Student"}
+          />
 
           {/* Continue Learning + Recommendations */}
           <div className="mb-8">

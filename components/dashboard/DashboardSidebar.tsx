@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   BookOpen,
-  GraduationCap,
   Menu,
   X,
   Home,
@@ -17,6 +17,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSidebar } from "@/components/providers/sidebar-provider";
 import DarkModeToggle from "@/components/DarkModeToggle";
 import { UserButton } from "@clerk/nextjs";
+import { NotificationBell } from "@/components/NotificationBell";
 
 const navigation = [
   {
@@ -73,26 +74,33 @@ export function DashboardSidebar() {
         )}
       >
         <div className="flex flex-col h-full">
-          {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-border">
+          {/* Header with Logo */}
+          <div className="flex items-center justify-between p-4 border-b border-border">
             <Link
               href="/dashboard"
               className="flex items-center gap-2"
               onClick={close}
             >
-              <GraduationCap className="h-6 w-6 text-primary" />
-              <span className="text-xl font-bold bg-gradient-to-r from-primary/90 to-primary bg-clip-text text-transparent">
-                Antioch LMS
-              </span>
+              <Image
+                src="/svgviewer-output.svg"
+                alt="Antioch LMS"
+                width={120}
+                height={40}
+                priority
+                className="h-7 w-auto"
+              />
             </Link>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="lg:hidden"
-              onClick={close}
-            >
-              <X className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-1">
+              <NotificationBell />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="lg:hidden"
+                onClick={close}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
 
           {/* Navigation */}
