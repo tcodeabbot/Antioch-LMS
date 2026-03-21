@@ -11,9 +11,8 @@ export interface QuizQuestion {
   explanation?: string;
 }
 
-export interface Quiz {
-  _id: string;
-  title: string;
+export interface LessonQuizData {
+  lessonId: string;
   passingScore: number;
   questions: QuizQuestion[];
 }
@@ -30,45 +29,62 @@ export interface QuizAttempt {
   }>;
 }
 
-export async function getQuizForLesson(lessonId: string): Promise<Quiz | null> {
+export async function getQuizForLesson(
+  lessonId: string
+): Promise<LessonQuizData | null> {
   const result = await sanityFetch({
-    query: groq`*[_type == "quiz" && lesson._ref == $lessonId][0]{
-      _id,
-      title,
-      passingScore,
-      questions
+    query: groq`*[_type == "lesson" && _id == $lessonId][0]{
+      "lessonId": _id,
+      "passingScore": quizPassingScore,
+      "questions": quizQuestions
     }`,
     params: { lessonId },
   });
 
-  return result.data as Quiz | null;
+  const data = result.data as {
+    lessonId: string;
+    passingScore: number | null;
+    questions: QuizQuestion[] | null;
+  } | null;
+
+  if (!data?.questions || data.questions.length === 0) return null;
+
+  return {
+    lessonId: data.lessonId,
+    passingScore: data.passingScore ?? 70,
+    questions: data.questions,
+  };
 }
 
 export async function getBestQuizAttempt(
-  quizId: string,
+  lessonId: string,
   clerkId: string
 ): Promise<QuizAttempt | null> {
   const student = await getStudentByClerkId(clerkId);
   if (!student?._id) return null;
 
   const result = await sanityFetch({
-    query: groq`*[_type == "quizAttempt" && quiz._ref == $quizId && student._ref == $studentId] | order(score desc)[0]{
+    query: groq`*[_type == "quizAttempt" && lesson._ref == $lessonId && student._ref == $studentId] | order(score desc)[0]{
       _id,
       score,
       passed,
       completedAt,
       answers
     }`,
-    params: { quizId, studentId: student._id },
+    params: { lessonId, studentId: student._id },
   });
 
   return result.data as QuizAttempt | null;
 }
 
 export async function submitQuizAttempt(
-  quizId: string,
+  lessonId: string,
   clerkId: string,
-  answers: Array<{ questionIndex: number; selectedAnswer: string; isCorrect: boolean }>,
+  answers: Array<{
+    questionIndex: number;
+    selectedAnswer: string;
+    isCorrect: boolean;
+  }>,
   score: number,
   passed: boolean
 ) {
@@ -78,7 +94,7 @@ export async function submitQuizAttempt(
   return client.create({
     _type: "quizAttempt",
     student: { _type: "reference", _ref: student._id },
-    quiz: { _type: "reference", _ref: quizId },
+    lesson: { _type: "reference", _ref: lessonId },
     answers,
     score,
     passed,

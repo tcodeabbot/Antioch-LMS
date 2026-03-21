@@ -17,7 +17,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { Quiz, QuizAttempt, QuizQuestion } from "@/sanity/lib/lessons/quizzes";
+import type { LessonQuizData, QuizAttempt, QuizQuestion } from "@/sanity/lib/lessons/quizzes";
 
 interface LessonQuizProps {
   lessonId: string;
@@ -27,7 +27,7 @@ type QuizState = "loading" | "ready" | "taking" | "reviewing";
 
 export function LessonQuiz({ lessonId }: LessonQuizProps) {
   const { user } = useUser();
-  const [quiz, setQuiz] = useState<Quiz | null>(null);
+  const [quiz, setQuiz] = useState<LessonQuizData | null>(null);
   const [bestAttempt, setBestAttempt] = useState<QuizAttempt | null>(null);
   const [quizState, setQuizState] = useState<QuizState>("loading");
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, string>>({});
@@ -42,7 +42,7 @@ export function LessonQuiz({ lessonId }: LessonQuizProps) {
     getQuizForLessonAction(lessonId).then(async (res) => {
       if (res.success && res.data) {
         setQuiz(res.data);
-        const attemptRes = await getBestQuizAttemptAction(res.data._id, user.id);
+        const attemptRes = await getBestQuizAttemptAction(lessonId, user.id);
         if (attemptRes.success && attemptRes.data) {
           setBestAttempt(attemptRes.data);
         }
@@ -98,7 +98,7 @@ export function LessonQuiz({ lessonId }: LessonQuizProps) {
 
     startTransition(async () => {
       await submitQuizAttemptAction(
-        quiz._id,
+        lessonId,
         user!.id,
         questionResults.map(({ questionIndex, selectedAnswer, isCorrect }) => ({
           questionIndex,
@@ -108,7 +108,7 @@ export function LessonQuiz({ lessonId }: LessonQuizProps) {
         pct,
         didPass
       );
-      const updated = await getBestQuizAttemptAction(quiz._id, user!.id);
+      const updated = await getBestQuizAttemptAction(lessonId, user!.id);
       if (updated.success && updated.data) setBestAttempt(updated.data);
     });
   }
@@ -123,7 +123,7 @@ export function LessonQuiz({ lessonId }: LessonQuizProps) {
       >
         <ClipboardCheck className="h-4 w-4 text-primary" />
         <span className="text-sm font-medium flex-1">
-          Quiz: {quiz.title}
+          Lesson Quiz
           {bestAttempt && (
             <span className={cn(
               "ml-2 text-xs",
@@ -153,7 +153,7 @@ export function LessonQuiz({ lessonId }: LessonQuizProps) {
                 </div>
               </div>
               <div>
-                <p className="font-medium">{quiz.title}</p>
+                <p className="font-medium">Lesson Quiz</p>
                 <p className="text-sm text-muted-foreground mt-1">
                   {questions.length} question{questions.length !== 1 ? "s" : ""} · Passing score: {quiz.passingScore}%
                 </p>

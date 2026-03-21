@@ -11,7 +11,7 @@ import { categoryType } from "./categoryType";
 import { lessonCompletionType } from "./lessonCompletionType";
 import { lessonNoteType } from "./lessonNoteType";
 import { lessonCommentType } from "./lessonCommentType";
-import { quizType, quizQuestionType, quizAttemptType } from "./quizType";
+import { quizQuestionType, quizAttemptType } from "./quizType";
 import { lessonBookmarkType } from "./lessonBookmarkType";
 
 export const schema: { types: SchemaTypeDefinition[] } = {
@@ -28,7 +28,6 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     lessonNoteType,
     lessonCommentType,
     quizQuestionType,
-    quizType,
     quizAttemptType,
     lessonBookmarkType,
   ],

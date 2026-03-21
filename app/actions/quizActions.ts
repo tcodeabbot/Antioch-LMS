@@ -17,11 +17,11 @@ export async function getQuizForLessonAction(lessonId: string) {
 }
 
 export async function getBestQuizAttemptAction(
-  quizId: string,
+  lessonId: string,
   clerkId: string
 ) {
   try {
-    const attempt = await getBestQuizAttempt(quizId, clerkId);
+    const attempt = await getBestQuizAttempt(lessonId, clerkId);
     return { success: true, data: attempt };
   } catch (error) {
     console.error("Error fetching quiz attempt:", error);
@@ -30,7 +30,7 @@ export async function getBestQuizAttemptAction(
 }
 
 export async function submitQuizAttemptAction(
-  quizId: string,
+  lessonId: string,
   clerkId: string,
   answers: Array<{
     questionIndex: number;
@@ -41,7 +41,7 @@ export async function submitQuizAttemptAction(
   passed: boolean
 ) {
   try {
-    await submitQuizAttempt(quizId, clerkId, answers, score, passed);
+    await submitQuizAttempt(lessonId, clerkId, answers, score, passed);
     return { success: true };
   } catch (error) {
     console.error("Error submitting quiz:", error);

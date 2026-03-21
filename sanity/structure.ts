@@ -21,20 +21,6 @@ export const structure = (S: StructureBuilder) =>
                       S.document().schemaType("course").documentId(courseId)
                     ),
                   S.listItem()
-                    .title("Quizzes")
-                    .child(
-                      S.documentList()
-                        .title("Course Quizzes")
-                        .schemaType("quiz")
-                        .filter(
-                          '_type == "quiz" && lesson->._id in *[_type == "module" && _id in *[_type == "course" && _id == $courseId].modules[]._ref].lessons[]._ref'
-                        )
-                        .params({ courseId })
-                        .canHandleIntent(
-                          S.documentTypeList("quiz").getCanHandleIntent()
-                        )
-                    ),
-                  S.listItem()
                     .title("View Students")
                     .child(
                       S.documentList()
@@ -47,14 +33,6 @@ export const structure = (S: StructureBuilder) =>
                 ])
             )
         ),
-
-      S.divider(),
-
-      // Quizzes — top-level access to all quizzes
-      S.listItem()
-        .title("Quizzes")
-        .schemaType("quiz")
-        .child(S.documentTypeList("quiz").title("All Quizzes")),
 
       S.divider(),
 

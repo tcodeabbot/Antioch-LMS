@@ -58,51 +58,6 @@ export const quizQuestionType = defineType({
   },
 });
 
-export const quizType = defineType({
-  name: "quiz",
-  title: "Quiz",
-  type: "document",
-  fields: [
-    defineField({
-      name: "title",
-      title: "Title",
-      type: "string",
-      validation: (rule) => rule.required(),
-    }),
-    defineField({
-      name: "lesson",
-      title: "Lesson",
-      type: "reference",
-      to: [{ type: "lesson" }],
-      description: "The lesson this quiz belongs to.",
-    }),
-    defineField({
-      name: "passingScore",
-      title: "Passing Score (%)",
-      type: "number",
-      description: "Minimum percentage to pass (e.g. 70 for 70%).",
-      initialValue: 70,
-      validation: (rule) => rule.min(0).max(100),
-    }),
-    defineField({
-      name: "questions",
-      title: "Questions",
-      type: "array",
-      of: [{ type: "quizQuestion" }],
-      validation: (rule) => rule.min(1),
-    }),
-  ],
-  preview: {
-    select: { title: "title", lessonTitle: "lesson.title" },
-    prepare({ title, lessonTitle }) {
-      return {
-        title: title || "Untitled Quiz",
-        subtitle: lessonTitle ? `Lesson: ${lessonTitle}` : "No lesson assigned",
-      };
-    },
-  },
-});
-
 export const quizAttemptType = defineType({
   name: "quizAttempt",
   title: "Quiz Attempt",
@@ -116,10 +71,10 @@ export const quizAttemptType = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
-      name: "quiz",
-      title: "Quiz",
+      name: "lesson",
+      title: "Lesson",
       type: "reference",
-      to: [{ type: "quiz" }],
+      to: [{ type: "lesson" }],
       validation: (rule) => rule.required(),
     }),
     defineField({
@@ -154,10 +109,10 @@ export const quizAttemptType = defineType({
     }),
   ],
   preview: {
-    select: { quizTitle: "quiz.title", score: "score", passed: "passed" },
-    prepare({ quizTitle, score, passed }) {
+    select: { lessonTitle: "lesson.title", score: "score", passed: "passed" },
+    prepare({ lessonTitle, score, passed }) {
       return {
-        title: quizTitle || "Quiz",
+        title: lessonTitle || "Lesson Quiz",
         subtitle: `Score: ${score ?? 0}% — ${passed ? "Passed" : "Failed"}`,
       };
     },

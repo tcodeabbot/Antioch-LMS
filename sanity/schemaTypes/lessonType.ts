@@ -92,5 +92,24 @@ export const lessonType = defineType({
       type: "array",
       of: [{ type: "block" }],
     }),
+    defineField({
+      name: "quizPassingScore",
+      title: "Quiz Passing Score (%)",
+      type: "number",
+      description:
+        "Minimum percentage to pass the quiz (e.g. 70). Leave empty if no quiz.",
+      validation: (rule) => rule.min(0).max(100),
+      group: "quiz",
+    }),
+    defineField({
+      name: "quizQuestions",
+      title: "Quiz Questions",
+      type: "array",
+      group: "quiz",
+      of: [{ type: "quizQuestion" }],
+    }),
+  ],
+  groups: [
+    { name: "quiz", title: "Quiz" },
   ],
 });
