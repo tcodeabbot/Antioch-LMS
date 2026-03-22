@@ -26,6 +26,7 @@ import {
   X,
   Check,
   CornerDownRight,
+  Pin,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { LessonComment } from "@/sanity/lib/lessons/lessonComments";
@@ -357,7 +358,10 @@ function CommentItem({
   userAvatarSrc?: string | null;
   userAvatarFallback: string;
 }) {
-  const isOwn = comment.student?.clerkId === userId;
+  const isStaff = comment.authorType === "admin";
+  const isOwn =
+    (!isStaff && comment.student?.clerkId === userId) ||
+    (isStaff && comment.adminClerkId === userId);
   const isOptimistic = comment._id.startsWith("optimistic-");
   const isDeleting = deletingId === comment._id;
   const isEditing = editingId === comment._id;
@@ -373,13 +377,14 @@ function CommentItem({
       <div
         className={cn(
           "group rounded-xl px-3 py-2.5 transition-colors hover:bg-muted/40",
-          isReply && "ml-6 sm:ml-10"
+          isReply && "ml-6 sm:ml-10",
+          comment.pinned && "border border-amber-500/35 bg-amber-500/[0.06]"
         )}
       >
         <div className="flex gap-2.5">
           <UserAvatar
-            src={comment.student?.imageUrl}
-            fallback={comment.student?.firstName?.[0] || "?"}
+            src={isStaff ? undefined : comment.student?.imageUrl}
+            fallback={isStaff ? "S" : comment.student?.firstName?.[0] || "?"}
             size={isReply ? "sm" : "md"}
           />
           <div className="flex-1 min-w-0">
@@ -391,8 +396,21 @@ function CommentItem({
                   isReply ? "text-[13px]" : "text-sm"
                 )}
               >
-                {comment.student?.firstName} {comment.student?.lastName}
+                {isStaff
+                  ? "Antioch Staff"
+                  : `${comment.student?.firstName ?? ""} ${comment.student?.lastName ?? ""}`.trim()}
               </span>
+              {comment.pinned && (
+                <span className="text-[10px] font-medium text-amber-900 dark:text-amber-100 bg-amber-500/20 px-1.5 py-0.5 rounded inline-flex items-center gap-0.5">
+                  <Pin className="h-3 w-3" />
+                  Pinned
+                </span>
+              )}
+              {isStaff && (
+                <span className="text-[10px] font-medium text-amber-800 dark:text-amber-200 bg-amber-500/15 px-1.5 py-0.5 rounded">
+                  Staff
+                </span>
+              )}
               {isOwn && (
                 <span className="text-[10px] font-medium text-primary/70 bg-primary/10 px-1.5 py-0.5 rounded">
                   You

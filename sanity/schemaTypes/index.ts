@@ -15,6 +15,7 @@ import { quizQuestionType, quizAttemptType } from "./quizType";
 import { lessonBookmarkType } from "./lessonBookmarkType";
 import { studySessionType } from "./studySessionType";
 import { notificationType } from "./notificationType";
+import { emailTemplateType } from "./emailTemplateType";
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -34,5 +35,6 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     lessonBookmarkType,
     studySessionType,
     notificationType,
+    emailTemplateType,
   ],
 };

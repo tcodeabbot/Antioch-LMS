@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
@@ -13,6 +14,8 @@ import {
   Settings,
   BarChart3,
   UserCog,
+  Megaphone,
+  MessageSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -46,6 +49,16 @@ const navigation = [
     name: "Analytics",
     href: "/admin/analytics",
     icon: BarChart3,
+  },
+  {
+    name: "Discussions",
+    href: "/admin/discussions",
+    icon: MessageSquare,
+  },
+  {
+    name: "Marketing",
+    href: "/admin/marketing",
+    icon: Megaphone,
   },
   {
     name: "Team",
@@ -100,12 +113,20 @@ export function AdminSidebar() {
           <div className="flex items-center justify-between p-6 border-b border-border">
             <Link
               href="/admin"
-              className="flex items-center gap-2"
+              className="flex flex-col gap-1 min-w-0"
               onClick={close}
+              aria-label="Admin dashboard home"
             >
-              <GraduationCap className="h-6 w-6 text-primary" />
-              <span className="text-xl font-bold bg-gradient-to-r from-primary/90 to-primary bg-clip-text text-transparent">
-                Admin Panel
+              <Image
+                src="/svgviewer-output.svg"
+                alt="Antioch Christian Resource Center Logo"
+                width={120}
+                height={40}
+                priority
+                className="h-7 w-auto max-w-[9.5rem]"
+              />
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                Admin
               </span>
             </Link>
             <Button

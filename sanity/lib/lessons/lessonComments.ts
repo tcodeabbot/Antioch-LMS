@@ -9,7 +9,10 @@ export interface LessonComment {
   createdAt: string;
   editedAt?: string;
   parentCommentId?: string;
-  student: {
+  authorType?: "student" | "admin";
+  adminClerkId?: string;
+  pinned?: boolean;
+  student?: {
     _id: string;
     firstName: string;
     lastName: string;
@@ -26,11 +29,14 @@ export async function getLessonComments(
   lessonId: string
 ): Promise<LessonComment[]> {
   const result = await sanityFetch({
-    query: groq`*[_type == "lessonComment" && lesson._ref == $lessonId] | order(createdAt asc) {
+    query: groq`*[_type == "lessonComment" && lesson._ref == $lessonId] | order(pinned desc, createdAt asc) {
       _id,
       content,
       createdAt,
       editedAt,
+      authorType,
+      adminClerkId,
+      pinned,
       "parentCommentId": parentComment._ref,
       "student": student->{
         _id,
@@ -57,10 +63,12 @@ export async function createLessonComment(
 
   const doc: Record<string, unknown> = {
     _type: "lessonComment",
+    authorType: "student",
     student: { _type: "reference", _ref: student._id },
     lesson: { _type: "reference", _ref: lessonId },
     content,
     createdAt: new Date().toISOString(),
+    pinned: false,
   };
 
   if (parentCommentId) {
@@ -78,14 +86,18 @@ export async function editLessonComment(
   const student = await getStudentByClerkId(clerkId);
   if (!student?._id) throw new Error("Student not found");
 
-  const comment = await sanityFetch({
+  const meta = await sanityFetch({
     query: groq`*[_type == "lessonComment" && _id == $commentId][0]{
-      "studentRef": student._ref
+      "studentRef": student._ref,
+      authorType
     }`,
     params: { commentId },
   });
-
-  if (comment.data?.studentRef !== student._id) {
+  const m = meta.data as { studentRef?: string; authorType?: string } | null;
+  if (m?.authorType === "admin") {
+    throw new Error("Staff comments can be edited from the admin panel");
+  }
+  if (m?.studentRef !== student._id) {
     throw new Error("Not authorized to edit this comment");
   }
 
@@ -99,14 +111,18 @@ export async function deleteLessonComment(commentId: string, clerkId: string) {
   const student = await getStudentByClerkId(clerkId);
   if (!student?._id) throw new Error("Student not found");
 
-  const comment = await sanityFetch({
+  const meta = await sanityFetch({
     query: groq`*[_type == "lessonComment" && _id == $commentId][0]{
-      "studentRef": student._ref
+      "studentRef": student._ref,
+      authorType
     }`,
     params: { commentId },
   });
-
-  if (comment.data?.studentRef !== student._id) {
+  const dm = meta.data as { studentRef?: string; authorType?: string } | null;
+  if (dm?.authorType === "admin") {
+    throw new Error("Staff comments can be removed from the admin panel");
+  }
+  if (dm?.studentRef !== student._id) {
     throw new Error("Not authorized to delete this comment");
   }
 
