@@ -61,8 +61,10 @@ export default clerkMiddleware(async (auth, req) => {
     }
   }
 
-  // Fast path: skip Sanity call if we already verified onboarding this session
-  const hasOnboardingCookie = req.cookies.get(ONBOARDING_COOKIE)?.value === '1';
+  // Fast path: skip Sanity call if this Clerk user already passed onboarding this session
+  // (value is userId so multiple accounts on the same browser don't share state)
+  const hasOnboardingCookie =
+    req.cookies.get(ONBOARDING_COOKIE)?.value === userId;
 
   if (hasOnboardingCookie) {
     if (isOnboardingRoute(req)) {
@@ -72,7 +74,16 @@ export default clerkMiddleware(async (auth, req) => {
   }
 
   // Slow path: first visit this session — check Sanity once, then set cookie
-  const student = await getStudentByClerkIdForMiddleware(userId);
+  let student: { onboardingCompleted?: boolean } | null = null;
+  try {
+    student = await getStudentByClerkIdForMiddleware(userId);
+  } catch (err) {
+    console.error('[middleware] getStudentByClerkIdForMiddleware', err);
+    if (isOnboardingRoute(req)) {
+      return NextResponse.next();
+    }
+    return NextResponse.redirect(new URL('/onboarding', req.url));
+  }
   const hasCompletedOnboarding = student?.onboardingCompleted === true;
 
   if (!hasCompletedOnboarding) {
@@ -87,7 +98,7 @@ export default clerkMiddleware(async (auth, req) => {
     ? NextResponse.redirect(new URL('/dashboard', req.url))
     : NextResponse.next();
 
-  response.cookies.set(ONBOARDING_COOKIE, '1', {
+  response.cookies.set(ONBOARDING_COOKIE, userId, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',

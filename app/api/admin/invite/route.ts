@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { clerkClient } from "@clerk/nextjs/server";
 import { checkAdminAccess } from "@/lib/adminAuth";
 import { getAppBaseUrlFromRequest } from "@/lib/getAppBaseUrl";
+import { sendAdminInviteNotificationEmail } from "@/lib/email/sendAdminInviteEmail";
 
 function normalizeEmail(raw: string): string {
   return raw.trim().toLowerCase();
@@ -59,8 +60,18 @@ export async function POST(req: NextRequest) {
     } catch (err) {
       return NextResponse.json({ error: clerkErrMessage(err) }, { status: 400 });
     }
+
+    const baseUrl = getAppBaseUrlFromRequest(req);
+    const emailSent = await sendAdminInviteNotificationEmail({
+      to: email,
+      baseUrl,
+      kind: "promoted",
+    });
+
     return NextResponse.json({
-      message: "User promoted to admin successfully. They may need to sign out and back in to see admin access.",
+      message: emailSent
+        ? "User promoted to admin successfully. We sent them an email with next steps. They may need to sign out and back in to see admin access."
+        : "User promoted to admin successfully. They may need to sign out and back in to see admin access.",
     });
   }
 
@@ -85,8 +96,16 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const emailSent = await sendAdminInviteNotificationEmail({
+    to: email,
+    baseUrl,
+    kind: "invitation",
+  });
+
   return NextResponse.json({
-    message: "Invitation sent. They will receive an email with a link to complete sign-up.",
+    message: emailSent
+      ? "Invitation sent. They will receive an email from Clerk to accept, plus a message from us with details."
+      : "Invitation sent. They will receive an email with a link to complete sign-up.", // Clerk still emails if enabled; Resend optional
   });
 }
 

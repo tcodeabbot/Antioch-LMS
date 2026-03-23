@@ -15,7 +15,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { submitOnboarding } from "@/app/actions/submitOnboarding";
-import { BookOpen, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 const COUNTRIES = [
   { code: "AF", name: "Afghanistan" },
@@ -290,12 +291,20 @@ export default function OnboardingPage() {
         <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/50 to-black/70" />
 
         <div className="relative z-10 flex flex-col justify-between p-12">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-white/10 backdrop-blur-sm flex items-center justify-center">
-              <BookOpen className="h-5 w-5 text-white" />
-            </div>
-            <span className="text-white font-semibold text-lg">Antioch LMS</span>
-          </div>
+          <Link
+            href="/"
+            className="inline-flex w-fit rounded-lg bg-white/95 px-3 py-2 shadow-sm ring-1 ring-white/20 transition-opacity hover:opacity-95"
+            aria-label="Antioch LMS Home"
+          >
+            <Image
+              src="/svgviewer-output.svg"
+              alt="Antioch Christian Resource Center Logo"
+              width={140}
+              height={44}
+              priority
+              className="h-8 w-auto max-w-[10rem] sm:max-w-[11rem]"
+            />
+          </Link>
 
           <div className="space-y-6">
             <h2 className="text-4xl xl:text-5xl font-bold text-white leading-tight">
@@ -338,10 +347,20 @@ export default function OnboardingPage() {
       <div className="w-full lg:w-1/2 flex flex-col bg-background">
         {/* Mobile header */}
         <div className="lg:hidden flex items-center gap-3 p-6 border-b border-border">
-          <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center">
-            <BookOpen className="h-4 w-4 text-primary" />
-          </div>
-          <span className="font-semibold text-foreground">Antioch LMS</span>
+          <Link
+            href="/"
+            className="flex items-center"
+            aria-label="Antioch LMS Home"
+          >
+            <Image
+              src="/svgviewer-output.svg"
+              alt="Antioch Christian Resource Center Logo"
+              width={120}
+              height={40}
+              priority
+              className="h-8 w-auto max-w-[10rem]"
+            />
+          </Link>
         </div>
 
         <div className="flex-1 flex items-center justify-center p-6 sm:p-8 lg:p-12">
@@ -477,7 +496,7 @@ export default function OnboardingPage() {
                   <div className="space-y-2">
                     <Label htmlFor="country">Country</Label>
                     <Select
-                      value={formData.country}
+                      value={formData.country || undefined}
                       onValueChange={(value) =>
                         setFormData({ ...formData, country: value })
                       }
